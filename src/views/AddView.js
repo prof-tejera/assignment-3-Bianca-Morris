@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext, useReducer, useState } from "react";
 import styled from "styled-components";
 import Button from "../components/generic/Button";
+import { RoundsLabel } from "../components/generic/DisplayRounds";
+import Input from "../components/generic/Input";
 import TimeInput, { TimeInputLabel } from "../components/generic/TimeInput";
 
 
@@ -28,19 +30,29 @@ const CenteredBlock = styled(CenteredCol)`
 `
 
 const initialState = { type: "Stopwatch", status: "not started", endTime: ["", 1, 0] };
+const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
 
 const reducer = (state, action) => {
     switch(action.type) {
         case 'addTimer':
             return [...state, initialState ];
         case 'removeTimer':
-            // find state[action.indexToRemove]
-            return [];
+            return state.filter((timer, i) => i !== action.indexToRemove);
         case 'clearAll':
             return [initialState];
         case 'changeType':
-            state[action.indexToChange].type = action.newType;
-            return state;
+            const { indexToChange, newType } = action;
+            const newState = [];
+            for (let i=0; i < state.length; i++) {
+                if (i !== indexToChange) {
+                    newState.push(state[i]);
+                } else {
+                    const updated = {...state[i]};
+                    updated.type = newType;
+                    newState.push(updated);
+                }
+            }
+            return newState;
         default:
             throw new Error("Undefined action passed into reducer.");
     }
@@ -52,8 +64,8 @@ const AddView = () => {
         <CenteredCol>
             <H1>Add to Workout Routine</H1>
 
-            {routineState.map(timer => {
-                return <EditBlock {...timer} />
+            {routineState.map((timer, i) => {
+                return <EditBlock {...timer} index={i} {...{dispatch}} />
             })}
 
             <CenteredRow>
@@ -71,30 +83,36 @@ const AddView = () => {
 };
 
 const EditBlock = (props) => {
-    const { type = null, ...passProps } = props;
+    const { type, dispatch, index, ...passProps } = props;
     
     let blockToRender;
     switch (type) {
         case "Stopwatch": 
-            blockToRender = <StopwatchEditBlock {...passProps} />
+            blockToRender = <StopwatchEditBlock {...passProps} {...{ dispatch, index }} />
+            break;
+        case "Countdown": 
+            blockToRender = <CountdownEditBlock {...passProps} {...{ dispatch, index }} />
+            break;
+        case "Tabata":
+            blockToRender = <TabataEditBlock {...passProps} {...{ dispatch, index }} />
+            break;
+        case "XY": 
+            blockToRender = <XYEditBlock {...passProps} {...{ dispatch, index }} />
             break;
         default:
-            blockToRender = "lol unfinished";
-            break;
+            throw new Error("Unrecognized type of timer in EditBlock #" + index);
     }
-
-    const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
 
     return (
         <CenteredBlock>
             <CenteredRow>
                 <div>
                     <strong>Type:</strong>
-                    <select value={type}>
+                    <select value={type} onChange={(e) => dispatch({ type: "changeType", indexToChange: index, newType: e.target.value })} >
                         {timerTypes.map(timer => <option value={timer}>{timer}</option>) }
                     </select>
                 </div>
-                <Button variant="danger" onClick={() => console.log("button clicked")} >
+                <Button variant="danger" onClick={() => dispatch({ type: "removeTimer", indexToRemove: index })} >
                     <FontAwesomeIcon icon={faTrash} size="xs"/>
                 </Button>
             </CenteredRow>
@@ -104,7 +122,7 @@ const EditBlock = (props) => {
 };
 
 const StopwatchEditBlock = (props) => {
-    const { endTime: [ hours = "", minutes = "", seconds = "" ] = ["", "", ""] } = props;
+    const { endTime: [ hours = "", minutes = "", seconds = "" ] = [] } = props;
 
     return (
         <>
@@ -112,6 +130,64 @@ const StopwatchEditBlock = (props) => {
                 <strong>End Time:</strong>
                 <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
             </TimeInputLabel>
+        </>
+    );
+}
+
+const CountdownEditBlock = (props) => {
+    const { startTime: [ hours = "", minutes = "", seconds = "" ] = [] } = props;
+
+    return (
+        <>
+            <TimeInputLabel>
+                <strong>Start Time:</strong>
+                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
+            </TimeInputLabel>
+        </>
+    );
+}
+
+const TabataEditBlock = (props) => {
+    const { 
+        workTime: [ workHours = "", workMinutes = "", workSeconds = "" ] = [],
+        restTime: [ restHours = "", restMinutes = "", restSeconds = "" ] = [],
+        numRounds
+    } = props;
+
+    return (
+        <>
+            <TimeInputLabel>
+                <strong>Work Time:</strong>
+                <TimeInput hoursVal={workHours} minutesVal={workMinutes} secondsVal={workSeconds}/>
+            </TimeInputLabel>
+            <TimeInputLabel>
+                <strong>Rest Time:</strong>
+                <TimeInput hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
+            </TimeInputLabel>
+            <RoundsLabel>
+                # of Rounds:
+                <Input name="numRoundsTabata" value={numRounds} placeholder="1" onChange={() => console.log("needs work")}/>
+            </RoundsLabel>
+        </>
+    );
+}
+
+const XYEditBlock = (props) => {
+    const { 
+        startTime: [ hours = "", minutes = "", seconds = "" ] = [],
+        numRounds
+    } = props;
+
+    return (
+        <>
+            <TimeInputLabel>
+                <strong>Start Time:</strong>
+                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
+            </TimeInputLabel>
+            <RoundsLabel>
+                # of Rounds:
+                <Input name="numRoundsXY" value={numRounds} placeholder="1" onChange={() => console.log("needs work")}/>
+            </RoundsLabel>
         </>
     );
 }
