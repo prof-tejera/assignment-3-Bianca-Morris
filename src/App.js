@@ -4,7 +4,10 @@ import styled from "styled-components";
 
 import DocumentationView from "./views/DocumentationView";
 import TimersView from "./views/TimersView";
+import AddView from "./views/AddView";
+
 import AppProvider from "./context/AppProvider";
+import { H1 } from "./utils/tokensAndTheme";
 
 const Container = styled.div`
   background: #f0f6fb;
@@ -51,12 +54,18 @@ function App() {
             <NavItem>
               <Link to="/docs">Documentation</Link>
             </NavItem>
+            <NavItem>
+              <Link to="/add">Add to Routine</Link>
+            </NavItem>
           </Nav>
         </nav>
         <ViewCenterer>
           <Switch>
             <Route path="/docs">
               <DocumentationView />
+            </Route>
+            <Route path="/add">
+              <AddView />
             </Route>
             <Route path="/">
               <AppProvider>
