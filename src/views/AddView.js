@@ -27,7 +27,12 @@ const CenteredBlock = styled(CenteredCol)`
     padding: 20px 40px;
     background: #ffffff;
     margin: 10px;
-`
+`;
+
+const Scrollable = styled.div`
+    max-height: 450px;
+    overflow-y: scroll; 
+`;
 
 const initialState = { type: "Stopwatch", status: "not started", endTime: ["", 1, 0] };
 const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
@@ -40,15 +45,15 @@ const reducer = (state, action) => {
             return state.filter((timer, i) => i !== action.indexToRemove);
         case 'clearAll':
             return [initialState];
-        case 'changeType':
-            const { indexToChange, newType } = action;
+        case 'changePropVal':
+            const { indexToChange, propName, newValue } = action;
             const newState = [];
             for (let i=0; i < state.length; i++) {
                 if (i !== indexToChange) {
                     newState.push(state[i]);
                 } else {
                     const updated = {...state[i]};
-                    updated.type = newType;
+                    updated[propName] = newValue;
                     newState.push(updated);
                 }
             }
@@ -64,9 +69,12 @@ const AddView = () => {
         <CenteredCol>
             <H1>Add to Workout Routine</H1>
 
-            {routineState.map((timer, i) => {
-                return <EditBlock {...timer} index={i} {...{dispatch}} />
-            })}
+            <Scrollable>
+                {routineState.map((timer, i) => {
+                    return <EditBlock {...timer} index={i} {...{dispatch}} />
+                })}
+            </Scrollable>
+            
 
             <CenteredRow>
                 <Button onClick={() => dispatch({ type: "addTimer" })}>
@@ -108,7 +116,7 @@ const EditBlock = (props) => {
             <CenteredRow>
                 <div>
                     <strong>Type:</strong>
-                    <select value={type} onChange={(e) => dispatch({ type: "changeType", indexToChange: index, newType: e.target.value })} >
+                    <select value={type} onChange={(e) => dispatch({ type: "changePropVal", indexToChange: index, newValue: e.target.value, propName: "type" })} >
                         {timerTypes.map(timer => <option value={timer}>{timer}</option>) }
                     </select>
                 </div>
