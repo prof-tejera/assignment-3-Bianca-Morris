@@ -24,7 +24,7 @@ const Countdown = (props) => {
     tickDown,
     setIsIncrementing,
     timerComplete,
-    timerHasBeenStarted
+    // timerHasBeenStarted
   } = useContext(AppContext);
 
   const { startTime } = routineState[timerIdx];

@@ -12,7 +12,7 @@ export const AppContext = React.createContext({});
 const emptyTimer = ["", "", ""]; // [Hours, Minutes, Seconds]
 
 const initialState = { type: "Stopwatch", status: "not started", endTime: emptyTimer };
-const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
+// const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
 
 const getPropsToAddOnChangeType = (timerType) => {
   switch(timerType) {
@@ -69,6 +69,7 @@ const AppProvider = ({ children }) => {
   const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineSatate to display
 
   const currRoutineStep = routineState[timerIdx];
+  const { startTime, endTime, restTime, workTime, numRounds } = currRoutineStep || {};
 
   // State shared across all timers
   const [ timer, setTimer ] = usePersistedState("timer", emptyTimer);
@@ -76,11 +77,6 @@ const AppProvider = ({ children }) => {
   const [ isIncrementing, setIsIncrementing ] = usePersistedState("is-incrementing", true); // if False, is decrementing
 
   // States specific to certain timers
-  const [ startTime, setStartTime ] = usePersistedState("start-time", emptyTimer); // Used in Countdown & XY
-  const [ endTime, setEndTime ] = usePersistedState("end-time", emptyTimer); // Used in Stopwatch
-  const [ workTime, setWorkTime ] = usePersistedState("work-time", emptyTimer); // Used in Tabata
-  const [ restTime, setRestTime ] = usePersistedState("rest-time", emptyTimer); // Used in Tabata
-  const [ numRounds, setNumRounds ] = usePersistedState("num-rounds", 1); // Used in Tabata and XY
   const [ currRound, setCurrRound ] = usePersistedState("curr-round", 1); // Used in Tabata and XY
   const [ isWorkTime, setIsWorkTime ] = usePersistedState("is-work-time", true); // if False, is rest time
 

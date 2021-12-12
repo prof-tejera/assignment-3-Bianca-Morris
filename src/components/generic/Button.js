@@ -13,8 +13,9 @@ export const ButtonSpacer = styled.div`
 const BaseButton = styled.button`
     color: ${themeColors.textLight};
     border: none;
-    padding: 10px 20px;
-    font-size: 30px;
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 20px;
     font-weight: 700;
     font-family: SourceCodePro;
     :disabled {

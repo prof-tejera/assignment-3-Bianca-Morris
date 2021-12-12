@@ -1,6 +1,6 @@
 import { faPlus, faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext, useReducer, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import Button from "../components/generic/Button";
 import { RoundsLabel } from "../components/generic/DisplayRounds";
@@ -9,7 +9,7 @@ import TimeInput, { TimeInputLabel } from "../components/generic/TimeInput";
 import { AppContext } from "../context/AppProvider";
 
 
-import { H1, themeColors } from "../utils/tokensAndTheme";
+import { H1 } from "../utils/tokensAndTheme";
 
 const CenteredDiv = styled.div`
   display: flex;
@@ -33,6 +33,11 @@ const CenteredBlock = styled(CenteredCol)`
 const Scrollable = styled.div`
     max-height: 450px;
     overflow-y: scroll; 
+`;
+
+const Dropdown = styled.select`
+    padding: 5px;
+    margin: 0 5px;
 `;
 
 const AddView = () => {
@@ -91,9 +96,9 @@ const EditBlock = (props) => {
             <CenteredRow>
                 <div>
                     <strong>Type:</strong>
-                    <select value={type} onChange={(e) => dispatch({ type: "changePropVal", indexToChange: index, newValue: e.target.value, propName: "type" })} >
-                        {timerTypes.map(timer => <option value={timer}>{timer}</option>) }
-                    </select>
+                    <Dropdown value={type} onChange={(e) => dispatch({ type: "changePropVal", indexToChange: index, newValue: e.target.value, propName: "type" })} >
+                        {timerTypes.map(timer => <option key={timer} value={timer}>{timer}</option>) }
+                    </Dropdown>
                 </div>
                 <Button variant="danger" onClick={() => dispatch({ type: "removeTimer", indexToRemove: index })} >
                     <FontAwesomeIcon icon={faTrash} size="xs"/>

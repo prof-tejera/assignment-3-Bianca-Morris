@@ -42,7 +42,6 @@ const TimerTitle = styled.div`
   margin-bottom: 10px;
   text-transform: uppercase;
   font-weight: 700;
-  cursor: pointer;
   font-family: SourceCodePro;
 `;
 
@@ -52,7 +51,7 @@ const ActiveTimerTitle = styled(TimerTitle)`
 `;
 
 function App() {
-  const { timerIdx, setTimerIdx, handleReset, routineState = [] } = useContext(AppContext);
+  const { timerIdx, routineState = [] } = useContext(AppContext);
 
   const timers = {
     "Stopwatch": { C: (props) => <Stopwatch {...props} /> },
@@ -84,13 +83,10 @@ function App() {
   return (
     <Timers>
       <TimerSelector >
-      {/* {timers.map((timer, idx) => {
-        if (timerIdx === idx) {
-          return <ActiveTimerTitle key={timer.title} onClick={(e) => onTimerSwitch(e, idx)}>{timer.title}</ActiveTimerTitle>;
-        }
-        return <TimerTitle key={timer.title} onClick={(e) => onTimerSwitch(e, idx)}>{timer.title}</TimerTitle>;
-      })} */}
       { routineState.map((timer, idx) => {
+        if (timerIdx === idx) {
+          return <ActiveTimerTitle key={timer.uuid} {...{idx}}>{timer.type}</ActiveTimerTitle>;
+        }
         return <TimerTitle key={timer.uuid} {...{idx}}>{timer.type}</TimerTitle>
       })}
       </TimerSelector>
