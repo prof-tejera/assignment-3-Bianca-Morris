@@ -10,6 +10,7 @@ import { AppContext } from "../context/AppProvider";
 
 import { H1, themeColors } from "../utils/tokensAndTheme";
 import { Link } from "react-router-dom";
+import Button from "../components/generic/Button";
 
 const Timers = styled.div`
   display: flex;
@@ -36,7 +37,9 @@ const TimerTitle = styled.div`
   color: ${themeColors.textMedium};
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   padding: 20px 0;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -50,8 +53,12 @@ const ActiveTimerTitle = styled(TimerTitle)`
   color: ${themeColors.textLight};
 `;
 
+const TimerSubtitle = styled.div`
+  font-size: 10px;
+`;
+
 function App() {
-  const { timerIdx, routineState = [] } = useContext(AppContext);
+  const { timerIdx, routineState = [], restartRoutine, computeRoutineStepTime, computeTotalRoutineTime, displayTimeString } = useContext(AppContext);
 
   const timers = {
     "Stopwatch": { C: (props) => <Stopwatch {...props} /> },
@@ -81,19 +88,37 @@ function App() {
   const { type, ...passProps } = currentTimer || {}
 
   return (
-    <Timers>
-      <TimerSelector >
-      { routineState.map((timer, idx) => {
-        if (timerIdx === idx) {
-          return <ActiveTimerTitle key={timer.uuid} {...{idx}}>{timer.type}</ActiveTimerTitle>;
-        }
-        return <TimerTitle key={timer.uuid} {...{idx}}>{timer.type}</TimerTitle>
-      })}
-      </TimerSelector>
-      <Panel>
-        { timers[type].C({ ...passProps}) }
-      </Panel>
-    </Timers>
+    <div>
+      <Timers>
+        <TimerSelector >
+        { routineState.map((timer, idx) => {
+          if (timerIdx === idx) {
+            return (
+              <ActiveTimerTitle key={timer.uuid} {...{idx}}>
+                {timer.type}
+                <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
+              </ActiveTimerTitle>
+            );
+          }
+          return (
+            <TimerTitle key={timer.uuid} {...{idx}}>
+              {timer.type}
+              <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
+            </TimerTitle>
+          );
+        })}
+        </TimerSelector>
+        <Panel>
+          { timers[type].C({ ...passProps}) }
+        </Panel>
+      </Timers>
+      <div>
+        <Button onClick={() => restartRoutine()}>Restart Routine</Button>
+        <TimerSubtitle>Total Time: {displayTimeString(computeTotalRoutineTime())}</TimerSubtitle>
+      </div>
+      
+      
+    </div>
   );
 }
 

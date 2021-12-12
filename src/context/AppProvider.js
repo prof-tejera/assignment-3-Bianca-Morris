@@ -6,6 +6,7 @@ import timerEndSound from '../sfx/alarm.wav';
 import restStartSound from '../sfx/restStart.wav';
 import roundEndSound from '../sfx/roundEnd.wav';
 import { usePersistedState } from '../utils/customReactHooks';
+import { convertSecondsToHours, convertSecondsToMinutes } from '../utils/helpers';
 
 export const AppContext = React.createContext({});
 
@@ -128,7 +129,21 @@ const AppProvider = ({ children }) => {
   const timerComplete = () => {
     handleStop();
     playTimerEnd();
-    // alert('Timer complete!');
+
+    if (timerIdx !== routineState.length - 1) {
+      const nextTimerIdx = timerIdx + 1;
+      setTimerIdx(nextTimerIdx);
+
+      // reset everything
+      setCurrRound(1);
+      setIsWorkTime(true);
+      resetTimer(nextTimerIdx);
+
+      // then, auto start
+      handleStart();
+    } else {
+      alert('Routine complete!');
+    }
   }
 
   const roundComplete = () => {
@@ -257,6 +272,94 @@ const AppProvider = ({ children }) => {
     timerComplete();
   }
 
+  const restartRoutine = () => {
+    console.log("resettingRoutine");
+    setTimerIdx(0);
+    resetTimer(0);
+    setCurrRound(1);
+    setIsWorkTime(true);
+  }
+
+  const resetTimer = (idx) => {
+    const thisTimer = routineState[idx];
+    const { type } = thisTimer;
+    if (type !== "Stopwatch") {
+      const mapTimerTypeToReset = {
+        "Countdown": "startTime",
+        "XY": "startTime",
+        "Tabata": "workTime"
+      };
+      const timeToResetTo = thisTimer[mapTimerTypeToReset[type]];
+      console.log("resetting to", timeToResetTo, type)
+      setTimer(timeToResetTo);
+    } else {
+      setTimer(emptyTimer);
+    }
+  }
+
+  const multiplyTimerByValue = (timerA, value) => {
+    const arr = Array(value).fill(timerA);
+    return arr.reduce((a, i) => addTimers(a, i));
+  }
+
+  /** TODO: Needs to be updated with handling for empty string case */
+  const addTimers = (timerA, timerB) => {
+    const { 0: hoursA, 1: minutesA, 2: secondsA } = timerA;
+    const { 0: hoursB, 1: minutesB, 2: secondsB } = timerB;
+    
+    // convert everything to seconds
+    const totalHoursInSec = (hoursA + hoursB) * 3600;
+    const totalMinutesInSec = (minutesA + minutesB) * 60;
+    const totalSec = totalHoursInSec + totalMinutesInSec + secondsA + secondsB;
+
+    // convert back
+    const { 0: totalSecInHours = 0, 1: remainderFromHours = 0 } = convertSecondsToHours(totalSec);
+    const { 0: totalSecInMinutes = 0, 1: remainderFromMinutes = 0 } = convertSecondsToMinutes(remainderFromHours);
+    return [totalSecInHours, totalSecInMinutes, remainderFromMinutes];
+  }
+
+  const computeRoutineStepTime = (idx) => {
+    const { type, numRounds, startTime, workTime, restTime, endTime } = routineState[idx];
+    let stepTime;
+    switch(type) {
+      case "Stopwatch":
+        stepTime = endTime;
+        break;
+      case "XY":
+        stepTime = multiplyTimerByValue(startTime, numRounds);
+        break;
+      case "Tabata":
+        const totalRestTime = multiplyTimerByValue(restTime, numRounds);
+        const totalWorkTime = multiplyTimerByValue(workTime, numRounds);
+        stepTime = addTimers(totalRestTime, totalWorkTime);
+        break;
+      case "Countdown":
+        stepTime = startTime;
+        break;
+      default: 
+        throw new Error("Unexpected timer type in computeRoutineStepTime");
+    }
+    return stepTime;
+  }
+
+  const computeTotalRoutineTime = () => {
+    let totalTime;
+    for (let i = 0; i < routineState.length; i++) {
+      const thisStepTime = computeRoutineStepTime(i);
+      if (i === 0) { 
+       totalTime = thisStepTime;
+      } else {
+        totalTime = addTimers(thisStepTime, totalTime);
+      }
+    }
+    return totalTime;
+  }
+
+  const displayTimeString = (time) => {
+    const { 0: hours, 1: minutes, 2: seconds } = time;
+    return `Hours: ${hours || "0"}, Minutes: ${minutes || "0"}, Seconds: ${seconds || "0"}`;
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -292,7 +395,11 @@ const AppProvider = ({ children }) => {
         timerIdx,
         workTime,
         routineState,
-        dispatch
+        dispatch,
+        restartRoutine,
+        computeRoutineStepTime,
+        computeTotalRoutineTime,
+        displayTimeString
       }}
     >
       {children}
