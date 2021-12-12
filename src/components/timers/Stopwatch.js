@@ -14,17 +14,19 @@ import TimerControls from "../generic/TimerControls";
  */
 const Stopwatch = (props) =>  {
   const {
-    hours,
+    routineState = [],
+    timerIdx,
     minutes,
     seconds,
+    hours,
     isTimerRunning,
     tickUp,
     setIsIncrementing,
-    endTime,
     handleSetEndTime,
     timerHasBeenStarted
   } = useContext(AppContext);
 
+  const { endTime } = routineState[timerIdx];
   const { 0: endHours, 1: endMinutes, 2: endSeconds } = endTime || [];
   
   useInterval(() => {
@@ -46,8 +48,8 @@ const Stopwatch = (props) =>  {
       <H1>Stopwatch</H1>
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
-        End Time:
-        <TimeInput disabled={disableInput} hoursVal={endHours} minutesVal={endMinutes} secondsVal={endSeconds} onChange={handleSetEndTime} />
+        End Time: 
+        <TimeInput disabled hoursVal={endHours} minutesVal={endMinutes} secondsVal={endSeconds} onChange={handleSetEndTime} />
       </TimeInputLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
     </React.Fragment>

@@ -16,21 +16,22 @@ import TimerControls from "../generic/TimerControls";
  */
 const XY = (props) => {
   const {
+    routineState,
+    timerIdx,
     hours,
     minutes,
     seconds,
     isTimerRunning,
-    startTime,
     handleSetStartTime,
     tickDown,
     setIsIncrementing,
-    numRounds,
     handleChangeNumRounds,
     currRound,
     roundComplete,
     timerHasBeenStarted
   } = useContext(AppContext);
 
+  const { startTime, numRounds } = routineState[timerIdx];
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {
@@ -57,7 +58,7 @@ const XY = (props) => {
       </TimeInputLabel>
       <RoundsLabel>
         # of Rounds:
-        <Input name="numRoundsXY" disabled={disableInputs} value={numRounds} placeholder="1" onChange={handleChangeNumRounds}/>
+        <Input name="numRoundsXY" disabled value={numRounds} placeholder="1" onChange={handleChangeNumRounds}/>
       </RoundsLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
     </React.Fragment>

@@ -8,7 +8,8 @@ import XY from "../components/timers/XY";
 import Tabata from "../components/timers/Tabata";
 import { AppContext } from "../context/AppProvider";
 
-import { themeColors } from "../utils/tokensAndTheme";
+import { H1, themeColors } from "../utils/tokensAndTheme";
+import { Link } from "react-router-dom";
 
 const Timers = styled.div`
   display: flex;
@@ -23,9 +24,9 @@ const TimerSelector = styled.div`
   align-items: center;
   width: 250px;
   height: 350px;
-  justify-content: center;
+  justify-content: flex-start;
   background: linear-gradient(143deg, ${themeColors.timerSelectorGradient1} 0%, ${themeColors.timerSelectorGradient2} 100%);
-  overflow: visible;
+  overflow-y: scroll;
   border-radius: 20px 0 0 20px;
   padding: 30px;
 `;
@@ -51,32 +52,50 @@ const ActiveTimerTitle = styled(TimerTitle)`
 `;
 
 function App() {
-  const { timerIdx, setTimerIdx, handleReset } = useContext(AppContext);
+  const { timerIdx, setTimerIdx, handleReset, routineState = [] } = useContext(AppContext);
 
-  const timers = [
-    { title: "Stopwatch", C: <Stopwatch /> },
-    { title: "Countdown", C: <Countdown /> },
-    { title: "XY", C: <XY /> },
-    { title: "Tabata", C: <Tabata /> },
-  ];
+  const timers = {
+    "Stopwatch": { C: (props) => <Stopwatch {...props} /> },
+    "Countdown": { C: (props) => <Countdown {...props} /> },
+    "XY": { C: (props) => <XY {...props} /> },
+    "Tabata": { C: (props) => <Tabata {...props} /> },
+};
 
-  const onTimerSwitch = (e, idx) => {
-    handleReset(); // ensure any timers currently running are stopped & timer is reset
-    setTimerIdx(idx);
-  };
+  // const onTimerSwitch = (e, idx) => {
+  //   handleReset(); // ensure any timers currently running are stopped & timer is reset
+  //   setTimerIdx(idx);
+  // };
+
+  const routineDefined = routineState.length !== 0;
+  if (!routineDefined) {
+    return (
+      <Timers>
+        <div>
+          <H1>Ready to work out?</H1>
+          <Link to="/add">Create a Routine</Link>
+        </div>
+      </Timers>
+    );
+  }
+
+  const currentTimer = routineState[timerIdx];
+  const { type, ...passProps } = currentTimer || {}
 
   return (
     <Timers>
       <TimerSelector >
-      {timers.map((timer, idx) => {
+      {/* {timers.map((timer, idx) => {
         if (timerIdx === idx) {
           return <ActiveTimerTitle key={timer.title} onClick={(e) => onTimerSwitch(e, idx)}>{timer.title}</ActiveTimerTitle>;
         }
         return <TimerTitle key={timer.title} onClick={(e) => onTimerSwitch(e, idx)}>{timer.title}</TimerTitle>;
+      })} */}
+      { routineState.map((timer, idx) => {
+        return <TimerTitle key={timer.uuid} {...{idx}}>{timer.type}</TimerTitle>
       })}
       </TimerSelector>
       <Panel>
-        {timers[timerIdx].C}
+        { timers[type].C({ ...passProps}) }
       </Panel>
     </Timers>
   );

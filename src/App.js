@@ -65,7 +65,9 @@ function App() {
               <DocumentationView />
             </Route>
             <Route path="/add">
-              <AddView />
+              <AppProvider>
+                <AddView />
+              </AppProvider>
             </Route>
             <Route path="/">
               <AppProvider>

@@ -22,24 +22,24 @@ const LessMarginH1 = styled(H1)`
  */
 const Tabata = (props) => {
   const {
+    routineState,
+    timerIdx,
     hours,
     minutes,
     seconds,
     isTimerRunning,
     isWorkTime,
-    workTime,
     handleSetWorkTime,
-    restTime,
     handleSetRestTime,
     tickDown,
     setIsIncrementing,
-    numRounds,
     handleChangeNumRounds,
     currRound,
     tabataRoundComplete,
     timerHasBeenStarted
   } = useContext(AppContext);
 
+  const { workTime, restTime, numRounds } = routineState[timerIdx];
   const { 0: workHours, 1: workMinutes, 2: workSeconds } = workTime || [];
   const { 0: restHours, 1: restMinutes, 2: restSeconds } = restTime || [];
 
@@ -64,11 +64,11 @@ const Tabata = (props) => {
       <DisplayTime {...{ hours, minutes, seconds }}/>
       <TimeInputLabel>
         Work Time:
-        <TimeInput disabled={disableInputs} onChange={handleSetWorkTime} hoursVal={workHours} minutesVal={workMinutes} secondsVal={workSeconds} />
+        <TimeInput disabled onChange={handleSetWorkTime} hoursVal={workHours} minutesVal={workMinutes} secondsVal={workSeconds} />
       </TimeInputLabel>
       <TimeInputLabel>
         Rest Time:
-        <TimeInput disabled={disableInputs} onChange={handleSetRestTime} hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
+        <TimeInput disabled onChange={handleSetRestTime} hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
       </TimeInputLabel>
       <RoundsLabel>
         # of Rounds:

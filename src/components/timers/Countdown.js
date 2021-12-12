@@ -14,11 +14,12 @@ import TimerControls from "../generic/TimerControls";
  */
 const Countdown = (props) => {
   const {
+    routineState,
+    timerIdx,
     hours,
     minutes,
     seconds,
     isTimerRunning,
-    startTime,
     handleSetStartTime,
     tickDown,
     setIsIncrementing,
@@ -26,6 +27,7 @@ const Countdown = (props) => {
     timerHasBeenStarted
   } = useContext(AppContext);
 
+  const { startTime } = routineState[timerIdx];
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {
@@ -45,7 +47,7 @@ const Countdown = (props) => {
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
         Start Time:
-        <TimeInput disabled={isTimerRunning || timerHasBeenStarted} hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime} />
+        <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime} />
       </TimeInputLabel>
       <TimerControls startDisabled={noStartTimeInputted}/>
     </React.Fragment>

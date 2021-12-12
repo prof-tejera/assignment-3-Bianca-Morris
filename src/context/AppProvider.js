@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import useSound from 'use-sound';
+import { v4 as uuidv4 } from 'uuid';
 
 import timerEndSound from '../sfx/alarm.wav';
 import restStartSound from '../sfx/restStart.wav';
@@ -10,10 +11,67 @@ export const AppContext = React.createContext({});
 
 const emptyTimer = ["", "", ""]; // [Hours, Minutes, Seconds]
 
+const initialState = { type: "Stopwatch", status: "not started", endTime: emptyTimer };
+const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
+
+const getPropsToAddOnChangeType = (timerType) => {
+  switch(timerType) {
+    case 'Stopwatch':
+      return { endTime: emptyTimer };
+    case 'Countdown':
+      return { startTime: emptyTimer};
+    case 'Tabata':
+      return { workTime: emptyTimer, restTime: emptyTimer, numRounds: 1 };
+    case 'XY':
+      return { startTime: emptyTimer, numRounds: 1 };
+    default:
+      throw new Error("Unexpected timerType");
+  }
+}
+
+const reducer = (state, action) => {
+    const { indexToChange, propName, newValue } = action;
+    const newState = [];
+
+    switch(action.type) {
+        case 'addTimer':
+            const stateWithId = {...initialState, uuid: uuidv4()};
+            return [...state, stateWithId ];
+        case 'removeTimer':
+            return state.filter((timer, i) => i !== action.indexToRemove);
+        case 'clearAll':
+            return [initialState];
+        case 'changePropVal':
+            for (let i=0; i < state.length; i++) {
+                if (i !== indexToChange) {
+                    newState.push(state[i]);
+                } else {
+                    let updated;
+                    if (propName === "type") {
+                      // add timer-specific props to state for new timer type (startTime, numRounds, etc.)
+                      const propsForNewType = getPropsToAddOnChangeType(newValue);
+                      updated = {...state[i], ...propsForNewType };
+                    } else {
+                      updated = {...state[i]};
+                    }
+                    updated[propName] = newValue;
+                    newState.push(updated);
+                }
+            }
+            return newState;
+        default:
+            throw new Error("Unexpected action passed into reducer.");
+    }
+}
+
 const AppProvider = ({ children }) => {
+  const [ routineState, dispatch ] = useReducer(reducer, []);
+  const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineSatate to display
+
+  const currRoutineStep = routineState[timerIdx];
+
   // State shared across all timers
   const [ timer, setTimer ] = usePersistedState("timer", emptyTimer);
-  const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer array specified in TimersView.js
   const [ isTimerRunning, setTimerRunning ] = usePersistedState("is-timer-running", false);
   const [ isIncrementing, setIsIncrementing ] = usePersistedState("is-incrementing", true); // if False, is decrementing
 
@@ -106,44 +164,55 @@ const AppProvider = ({ children }) => {
   }
 
   // Event Handlers
-  const handleSetStartTime = (e) => {
-    handleSetTimeInput(e, setStartTime, startTime);
+  const handleSetStartTime = (e, idxToChange, startTime) => {
+    handleSetTimeInput(e, idxToChange, startTime, "startTime");
   }
 
-  const handleSetWorkTime = (e) => {
-    handleSetTimeInput(e, setWorkTime, workTime);
+  const handleSetWorkTime = (e, idxToChange, workTime) => {
+    handleSetTimeInput(e, idxToChange, workTime, "workTime");
   }
 
-  const handleSetRestTime = (e) => {
-    handleSetTimeInput(e, setRestTime, restTime);
+  const handleSetRestTime = (e, idxToChange, restTime) => {
+    handleSetTimeInput(e, idxToChange, restTime, "restTime");
   }
 
-  const handleSetEndTime = (e) => {
-    handleSetTimeInput(e, setEndTime, endTime);
+  const handleSetEndTime = (e, idxToChange, endTime) => {
+    handleSetTimeInput(e, idxToChange, endTime, "endTime");
   }
 
-  const handleSetTimeInput = (e, callback, time) => {
+  const handleSetTimeInput = (e, indexToChange, time, timeType) => {
     const { target: { value, name } = {} } = e || {};
     const { 0: inputHours, 1: inputMinutes, 2: inputSeconds } = time || [];
     const valInt = parseInt(value || 0);
+    const action = {
+      type: "changePropVal",
+      propName: timeType,
+      indexToChange,
+    };
     switch(name) {
       case "hourInput":
-        callback([valInt, inputMinutes, inputSeconds]);
+        action.newValue = [valInt, inputMinutes, inputSeconds]
         break;
       case "minuteInput":
-        callback([inputHours, valInt, inputSeconds]);
+        action.newValue = [inputHours, valInt, inputSeconds];
         break;
       case "secondInput":
-        callback([inputHours, inputMinutes, valInt]);
+        action.newValue = [inputHours, inputMinutes, valInt];
         break;
       default:
         throw new Error("Attempting to handle time change for unrecognized input.");
-    }   
+    };
+    dispatch(action);
   }
 
-  const handleChangeNumRounds = (num) => {
+  const handleChangeNumRounds = (indexToChange, num) => {
     const numInt = parseInt(num || 0);
-    setNumRounds(numInt);
+    dispatch({
+      type: "changePropVal",
+      propName: "numRounds",
+      newValue: numInt,
+      indexToChange
+    });
   }
 
   const handleStop = (e) => {
@@ -226,6 +295,8 @@ const AppProvider = ({ children }) => {
         timerHasBeenStarted,
         timerIdx,
         workTime,
+        routineState,
+        dispatch
       }}
     >
       {children}

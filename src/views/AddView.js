@@ -6,6 +6,7 @@ import Button from "../components/generic/Button";
 import { RoundsLabel } from "../components/generic/DisplayRounds";
 import Input from "../components/generic/Input";
 import TimeInput, { TimeInputLabel } from "../components/generic/TimeInput";
+import { AppContext } from "../context/AppProvider";
 
 
 import { H1, themeColors } from "../utils/tokensAndTheme";
@@ -34,44 +35,17 @@ const Scrollable = styled.div`
     overflow-y: scroll; 
 `;
 
-const initialState = { type: "Stopwatch", status: "not started", endTime: ["", 1, 0] };
-const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
-
-const reducer = (state, action) => {
-    switch(action.type) {
-        case 'addTimer':
-            return [...state, initialState ];
-        case 'removeTimer':
-            return state.filter((timer, i) => i !== action.indexToRemove);
-        case 'clearAll':
-            return [initialState];
-        case 'changePropVal':
-            const { indexToChange, propName, newValue } = action;
-            const newState = [];
-            for (let i=0; i < state.length; i++) {
-                if (i !== indexToChange) {
-                    newState.push(state[i]);
-                } else {
-                    const updated = {...state[i]};
-                    updated[propName] = newValue;
-                    newState.push(updated);
-                }
-            }
-            return newState;
-        default:
-            throw new Error("Undefined action passed into reducer.");
-    }
-}
-
 const AddView = () => {
-    const [ routineState, dispatch ] = useReducer(reducer, [initialState]);
+    const { routineState = [], dispatch } = useContext(AppContext);
+
     return (
         <CenteredCol>
             <H1>Add to Workout Routine</H1>
 
             <Scrollable>
                 {routineState.map((timer, i) => {
-                    return <EditBlock {...timer} index={i} {...{dispatch}} />
+                    const { uuid } = timer;
+                    return <EditBlock key={uuid} {...timer} index={i} {...{ dispatch }} />
                 })}
             </Scrollable>
             
@@ -92,6 +66,7 @@ const AddView = () => {
 
 const EditBlock = (props) => {
     const { type, dispatch, index, ...passProps } = props;
+    const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
     
     let blockToRender;
     switch (type) {
@@ -130,71 +105,83 @@ const EditBlock = (props) => {
 };
 
 const StopwatchEditBlock = (props) => {
-    const { endTime: [ hours = "", minutes = "", seconds = "" ] = [] } = props;
+    const { handleSetEndTime } = useContext(AppContext);
+    const { endTime, index } = props;
+    const { 0: hours = "", 1: minutes = "", 2: seconds = "" } = endTime || [];
 
     return (
         <>
             <TimeInputLabel>
                 <strong>End Time:</strong>
-                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
+                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}
+                    onChange={(e) => handleSetEndTime(e, index, endTime )} />
             </TimeInputLabel>
         </>
     );
 }
 
 const CountdownEditBlock = (props) => {
-    const { startTime: [ hours = "", minutes = "", seconds = "" ] = [] } = props;
+    const { handleSetStartTime } = useContext(AppContext);
+    const { startTime, index } = props;
+    const { 0: hours = "", 1: minutes = "", 2: seconds = "" } = startTime || [];
 
     return (
         <>
             <TimeInputLabel>
                 <strong>Start Time:</strong>
-                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
+                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}
+                    onChange={(e) => handleSetStartTime(e, index, startTime )} />
             </TimeInputLabel>
         </>
     );
 }
 
 const TabataEditBlock = (props) => {
+    const { handleSetWorkTime, handleSetRestTime, handleChangeNumRounds } = useContext(AppContext);
     const { 
-        workTime: [ workHours = "", workMinutes = "", workSeconds = "" ] = [],
-        restTime: [ restHours = "", restMinutes = "", restSeconds = "" ] = [],
-        numRounds
+        workTime, restTime, numRounds, index
     } = props;
+
+    const { 0: workHours = "", 1: workMinutes = "", 2: workSeconds = "" } = workTime || [];
+    const { 0: restHours = "", 1: restMinutes = "", 2: restSeconds = "" } = restTime || [];
 
     return (
         <>
             <TimeInputLabel>
                 <strong>Work Time:</strong>
-                <TimeInput hoursVal={workHours} minutesVal={workMinutes} secondsVal={workSeconds}/>
+                <TimeInput hoursVal={workHours} minutesVal={workMinutes} secondsVal={workSeconds}
+                    onChange={(e) => handleSetWorkTime(e, index, workTime )}/>
             </TimeInputLabel>
             <TimeInputLabel>
                 <strong>Rest Time:</strong>
-                <TimeInput hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
+                <TimeInput hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}
+                    onChange={(e) => handleSetRestTime(e, index, restTime )}/>
             </TimeInputLabel>
             <RoundsLabel>
                 # of Rounds:
-                <Input name="numRoundsTabata" value={numRounds} placeholder="1" onChange={() => console.log("needs work")}/>
+                <Input name="numRoundsTabata" value={numRounds} placeholder="1" onChange={(num) => handleChangeNumRounds(index, num)} />
             </RoundsLabel>
         </>
     );
 }
 
 const XYEditBlock = (props) => {
+    const { handleSetStartTime, handleChangeNumRounds } = useContext(AppContext);
     const { 
-        startTime: [ hours = "", minutes = "", seconds = "" ] = [],
-        numRounds
+        startTime, numRounds, index
     } = props;
+    const { 0: hours = "", 1: minutes = "", 2: seconds = "" } = startTime || [];
 
     return (
         <>
             <TimeInputLabel>
                 <strong>Start Time:</strong>
-                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}/>
+                <TimeInput hoursVal={hours} minutesVal={minutes} secondsVal={seconds}
+                    onChange={(e) => handleSetStartTime(e, index, startTime )} />
             </TimeInputLabel>
             <RoundsLabel>
                 # of Rounds:
-                <Input name="numRoundsXY" value={numRounds} placeholder="1" onChange={() => console.log("needs work")}/>
+                <Input name="numRoundsXY" value={numRounds} placeholder="1" onChange={(num) => handleChangeNumRounds(index, num)} />
             </RoundsLabel>
         </>
     );
