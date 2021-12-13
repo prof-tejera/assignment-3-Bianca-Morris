@@ -274,8 +274,9 @@ const AppProvider = ({ children }) => {
 
   const restartRoutine = () => {
     console.log("resettingRoutine");
-    setTimerIdx(0);
-    resetTimer(0);
+    setTimerRunning(false);
+    if (timerIdx) { setTimerIdx(0); }
+    if (routineState.length > 0) { resetTimer(0); }
     setCurrRound(1);
     setIsWorkTime(true);
   }
@@ -296,6 +297,13 @@ const AppProvider = ({ children }) => {
       setTimer(emptyTimer);
     }
   }
+
+  // TODO: more handling for previous states interfering with current run (HH:MM:SS leftover values)
+  if (!currRoutineStep && routineState.length > 0) { 
+    // Leftover state from previous run interfering with current run; adjust start index and restart routine
+    // setTimerIdx(0);
+    restartRoutine();
+  };
 
   const multiplyTimerByValue = (timerA, value) => {
     const arr = Array(value).fill(timerA);

@@ -31,6 +31,7 @@ const Input = (props) => {
             e.target["value"] = transformTimeUnitToDisplayString(adjustedValue);
             onChange(e);
         } else {
+            // Note: additional validation for numRounds handled in context
             onChange(eventVal);
         }
     };
