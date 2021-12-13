@@ -58,15 +58,6 @@ export const isTimeABeforeTimeB = (timeA, timeB, includeEquals) => {
   return dateA < dateB;
 }
 
-/** 
- * DEPRECATED/UNUSED: These helpers are leftover from a previous attempt to use Javascript
- * DateTime for the timers (apparently more accurate to do it this way than simple interval)
- * -- due to complexity, this has been tabled. Keeping these here in case they become useful.
-*/
-export const convertMillisecToSec = (ms) => {
-  return ms / 1000;
-}
-
 export const convertSecondsToHours = (sec) => {
   const hours = Math.floor(sec / (60 * 60));
   const leftovers = sec - (hours * 60 * 60);
@@ -77,4 +68,24 @@ export const convertSecondsToMinutes = (sec) => {
   const mins = Math.floor(sec / 60);
   const leftovers = sec - (mins * 60);
   return [mins, leftovers];
+}
+
+/** 
+ * DEPRECATED/UNUSED: These helpers are leftover from a previous attempt to use Javascript
+ * DateTime for the timers (apparently more accurate to do it this way than simple interval)
+ * -- due to complexity, this has been tabled. Keeping these here in case they become useful.
+*/
+export const convertMillisecToSec = (ms) => {
+  return ms / 1000;
+}
+
+export const convertHoursToSeconds = (hours) => {
+  const seconds = hours * (60 * 60);
+  return seconds;
+}
+
+
+export const convertMinutesToSeconds = (minutes) => {
+  const seconds = minutes * 60;
+  return seconds;
 }
