@@ -12,6 +12,13 @@ import { H1, themeColors } from "../utils/tokensAndTheme";
 import { Link } from "react-router-dom";
 import Button from "../components/generic/Button";
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Timers = styled.div`
   display: flex;
   flex-direction: row;
@@ -19,7 +26,11 @@ const Timers = styled.div`
   justify-content: center;
 `;
 
-const TimerSelector = styled.div`
+const BottomPanel = styled.div`
+  margin-top: 10px;
+`;
+
+const RoutinePane = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,16 +72,11 @@ function App() {
   const { timerIdx, routineState = [], restartRoutine, computeRoutineStepTime, computeTotalRoutineTime, displayTimeString } = useContext(AppContext);
 
   const timers = {
-    "Stopwatch": { C: (props) => <Stopwatch {...props} /> },
-    "Countdown": { C: (props) => <Countdown {...props} /> },
-    "XY": { C: (props) => <XY {...props} /> },
-    "Tabata": { C: (props) => <Tabata {...props} /> },
-};
-
-  // const onTimerSwitch = (e, idx) => {
-  //   handleReset(); // ensure any timers currently running are stopped & timer is reset
-  //   setTimerIdx(idx);
-  // };
+    "Stopwatch": { C: <Stopwatch /> },
+    "Countdown": { C: <Countdown /> },
+    "XY": { C: <XY /> },
+    "Tabata": { C: <Tabata /> },
+  };
 
   const routineDefined = routineState.length !== 0;
   if (!routineDefined) {
@@ -85,12 +91,12 @@ function App() {
   }
 
   const currentTimer = routineState[timerIdx];
-  const { type, ...passProps } = currentTimer || {}
+  const { type } = currentTimer || {}
 
   return (
-    <div>
+    <Wrapper>
       <Timers>
-        <TimerSelector >
+        <RoutinePane >
         { routineState.map((timer, idx) => {
           if (timerIdx === idx) {
             return (
@@ -107,18 +113,18 @@ function App() {
             </TimerTitle>
           );
         })}
-        </TimerSelector>
+        </RoutinePane>
         <Panel>
-          { timers[type].C({ ...passProps}) }
+          { timers[type].C }
         </Panel>
       </Timers>
-      <div>
-        <Button onClick={() => restartRoutine()}>Restart Routine</Button>
+      <BottomPanel>
+        { timerIdx !== 0 ? 
+          <Button onClick={() => restartRoutine()}>Restart Routine</Button>
+          : null }
         <TimerSubtitle>Total Time: {displayTimeString(computeTotalRoutineTime())}</TimerSubtitle>
-      </div>
-      
-      
-    </div>
+      </BottomPanel> 
+    </Wrapper>
   );
 }
 
