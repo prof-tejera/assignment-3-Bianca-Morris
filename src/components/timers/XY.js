@@ -5,9 +5,8 @@ import { useInterval } from "../../utils/customReactHooks";
 
 import { H1 } from "../../utils/tokensAndTheme";
 import DisplayTime from "../generic/DisplayTime";
-import DisplayRounds, { RoundsLabel } from "../generic/DisplayRounds";
+import DisplayRounds from "../generic/DisplayRounds";
 import TimeInput, { TimeInputLabel } from "../generic/TimeInput";
-import Input from "../generic/Input";
 import TimerControls from "../generic/TimerControls";
 
 /**
@@ -25,10 +24,8 @@ const XY = (props) => {
     handleSetStartTime,
     tickDown,
     setIsIncrementing,
-    handleChangeNumRounds,
     currRound,
     roundComplete,
-    timerHasBeenStarted
   } = useContext(AppContext);
 
   const { startTime, numRounds } = routineState[timerIdx];
@@ -45,7 +42,6 @@ const XY = (props) => {
   const invalidRounds = currRound > numRounds;
   const disableStart = noStartTimeInputted || invalidRounds;
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
-  const disableInputs = timerHasBeenStarted || isTimerRunning;
 
   return (
     <React.Fragment>
@@ -54,12 +50,8 @@ const XY = (props) => {
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
         Start Time:
-        <TimeInput disabled={disableInputs} hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
+        <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
       </TimeInputLabel>
-      <RoundsLabel>
-        # of Rounds:
-        <Input name="numRoundsXY" disabled value={numRounds} placeholder="1" onChange={handleChangeNumRounds}/>
-      </RoundsLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
     </React.Fragment>
   );

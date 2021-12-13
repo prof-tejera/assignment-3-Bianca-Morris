@@ -6,9 +6,8 @@ import { useInterval } from "../../utils/customReactHooks";
 
 import { H1 } from "../../utils/tokensAndTheme";
 import DisplayTime from "../generic/DisplayTime";
-import DisplayRounds, { RoundsLabel } from "../generic/DisplayRounds";
+import DisplayRounds from "../generic/DisplayRounds";
 import TimeInput, { TimeInputLabel } from "../generic/TimeInput";
-import Input from "../generic/Input";
 import TimerControls from "../generic/TimerControls";
 
 const LessMarginH1 = styled(H1)`
@@ -33,10 +32,8 @@ const Tabata = (props) => {
     handleSetRestTime,
     tickDown,
     setIsIncrementing,
-    handleChangeNumRounds,
     currRound,
-    tabataRoundComplete,
-    timerHasBeenStarted
+    tabataRoundComplete
   } = useContext(AppContext);
 
   const { workTime, restTime, numRounds } = routineState[timerIdx];
@@ -54,7 +51,6 @@ const Tabata = (props) => {
   const noRestTimeInputted = !restHours && !restMinutes && !restSeconds;
   const invalidRounds = currRound > numRounds;
   const startDisabled = (noWorkTimeInputted && noRestTimeInputted) || invalidRounds; // allow to start as long as work or rest is present
-  const disableInputs = timerHasBeenStarted || isTimerRunning;
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
@@ -70,10 +66,6 @@ const Tabata = (props) => {
         Rest Time:
         <TimeInput disabled onChange={handleSetRestTime} hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
       </TimeInputLabel>
-      <RoundsLabel>
-        # of Rounds:
-        <Input disabled={disableInputs} name="numRoundsTabata" value={numRounds} placeholder="1" onChange={handleChangeNumRounds}/>
-      </RoundsLabel>
       <TimerControls {...{ startDisabled }}  resumeDisabled={disableResume}/>
     </React.Fragment>
   );

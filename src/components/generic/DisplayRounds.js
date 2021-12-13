@@ -9,6 +9,7 @@ export const RoundsLabel = styled.div`
 `;
 
 const Rounds = styled.div`
+  font-size: 25px;
   font-family: BubblegumSans;
 `;
 
