@@ -58,12 +58,13 @@ const AddView = () => {
             <CenteredRow>
                 <Button onClick={() => dispatch({ type: "addTimer" })}>
                     <FontAwesomeIcon icon={faPlus} size="xs"/>
-                    Add New
+                    Add New Timer
                 </Button>
-                <Button variant="danger" onClick={() => dispatch({ type: "clearAll" })}>
-                    <FontAwesomeIcon icon={faSync} size="xs"/>
-                    Reset
-                </Button>
+                { (routineState.length !== 0) &&
+                    <Button variant="danger" onClick={() => dispatch({ type: "clearAll" })}>
+                        <FontAwesomeIcon icon={faSync} size="xs"/>
+                        Start Over
+                    </Button>}
             </CenteredRow>
         </CenteredCol>
     );

@@ -12,10 +12,7 @@ export const AppContext = React.createContext({});
 
 const emptyTimer = ["", "", ""]; // [Hours, Minutes, Seconds]
 
-const initialState = { type: "Stopwatch", status: "not started", endTime: emptyTimer };
-// const timerTypes = ["Stopwatch", "Countdown", "Tabata", "XY"];
-
-const getPropsToAddOnChangeType = (timerType) => {
+const getKeysToAddOnChangeType = (timerType) => {
   switch(timerType) {
     case 'Stopwatch':
       return { endTime: emptyTimer };
@@ -36,12 +33,13 @@ const reducer = (state, action) => {
 
     switch(action.type) {
         case 'addTimer':
+            const initialState = { type: "Stopwatch", status: "not started", endTime: emptyTimer };
             const stateWithId = {...initialState, uuid: uuidv4()};
             return [...state, stateWithId ];
         case 'removeTimer':
             return state.filter((timer, i) => i !== action.indexToRemove);
         case 'clearAll':
-            return [initialState];
+            return [];
         case 'changePropVal':
             for (let i=0; i < state.length; i++) {
                 if (i !== indexToChange) {
@@ -50,8 +48,8 @@ const reducer = (state, action) => {
                     let updated;
                     if (propName === "type") {
                       // add timer-specific props to state for new timer type (startTime, numRounds, etc.)
-                      const propsForNewType = getPropsToAddOnChangeType(newValue);
-                      updated = {...state[i], ...propsForNewType };
+                      const keysForNewType = getKeysToAddOnChangeType(newValue);
+                      updated = {...state[i], ...keysForNewType };
                     } else {
                       updated = {...state[i]};
                     }
@@ -218,12 +216,14 @@ const AppProvider = ({ children }) => {
 
   const handleChangeNumRounds = (indexToChange, num) => {
     const numInt = parseInt(num || 0);
-    dispatch({
-      type: "changePropVal",
-      propName: "numRounds",
-      newValue: numInt,
-      indexToChange
-    });
+    if (!isNaN(numInt)) {
+      dispatch({
+        type: "changePropVal",
+        propName: "numRounds",
+        newValue: numInt,
+        indexToChange
+      });
+    }
   }
 
   const handleStop = (e) => {
