@@ -14,8 +14,7 @@ import TimerControls from "../generic/TimerControls";
  */
 const Stopwatch = (props) =>  {
   const {
-    routineState = [],
-    timerIdx,
+    currRoutineStep,
     minutes,
     seconds,
     hours,
@@ -23,10 +22,9 @@ const Stopwatch = (props) =>  {
     tickUp,
     setIsIncrementing,
     handleSetEndTime,
-    // timerHasBeenStarted
   } = useContext(AppContext);
 
-  const { endTime } = routineState[timerIdx];
+  const { endTime } = currRoutineStep;
   const { 0: endHours, 1: endMinutes, 2: endSeconds } = endTime || [];
   
   useInterval(() => {

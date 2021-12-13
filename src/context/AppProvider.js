@@ -399,7 +399,8 @@ const AppProvider = ({ children }) => {
         restartRoutine,
         computeRoutineStepTime,
         computeTotalRoutineTime,
-        displayTimeString
+        displayTimeString,
+        currRoutineStep
       }}
     >
       {children}

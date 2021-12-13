@@ -14,8 +14,7 @@ import TimerControls from "../generic/TimerControls";
  */
 const Countdown = (props) => {
   const {
-    routineState,
-    timerIdx,
+    currRoutineStep,
     hours,
     minutes,
     seconds,
@@ -26,7 +25,7 @@ const Countdown = (props) => {
     timerComplete,
   } = useContext(AppContext);
 
-  const { startTime } = routineState[timerIdx];
+  const { startTime } = currRoutineStep;
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {

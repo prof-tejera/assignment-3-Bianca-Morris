@@ -15,8 +15,7 @@ import TimerControls from "../generic/TimerControls";
  */
 const XY = (props) => {
   const {
-    routineState,
-    timerIdx,
+    currRoutineStep,
     hours,
     minutes,
     seconds,
@@ -28,7 +27,7 @@ const XY = (props) => {
     roundComplete,
   } = useContext(AppContext);
 
-  const { startTime, numRounds } = routineState[timerIdx];
+  const { startTime, numRounds } = currRoutineStep;
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {

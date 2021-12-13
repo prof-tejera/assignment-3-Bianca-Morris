@@ -69,7 +69,15 @@ const TimerSubtitle = styled.div`
 `;
 
 function App() {
-  const { timerIdx, routineState = [], restartRoutine, computeRoutineStepTime, computeTotalRoutineTime, displayTimeString } = useContext(AppContext);
+  const {
+    timerIdx,
+    routineState = [],
+    currRoutineStep,
+    restartRoutine,
+    computeRoutineStepTime,
+    computeTotalRoutineTime,
+    displayTimeString
+  } = useContext(AppContext);
 
   const timers = {
     "Stopwatch": { C: <Stopwatch /> },
@@ -90,8 +98,8 @@ function App() {
     );
   }
 
-  const currentTimer = routineState[timerIdx];
-  const { type } = currentTimer || {}
+  if (!currRoutineStep) { throw new Error("Routine defined, but no current step. TimerIdx might be out of bounds.")};
+  const { type } = currRoutineStep;
 
   return (
     <Wrapper>

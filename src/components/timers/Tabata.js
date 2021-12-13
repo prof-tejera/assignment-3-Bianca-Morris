@@ -21,8 +21,7 @@ const LessMarginH1 = styled(H1)`
  */
 const Tabata = (props) => {
   const {
-    routineState,
-    timerIdx,
+    currRoutineStep,
     hours,
     minutes,
     seconds,
@@ -36,7 +35,7 @@ const Tabata = (props) => {
     tabataRoundComplete
   } = useContext(AppContext);
 
-  const { workTime, restTime, numRounds } = routineState[timerIdx];
+  const { workTime, restTime, numRounds } = currRoutineStep;
   const { 0: workHours, 1: workMinutes, 2: workSeconds } = workTime || [];
   const { 0: restHours, 1: restMinutes, 2: restSeconds } = restTime || [];
 
