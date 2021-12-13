@@ -54,7 +54,7 @@ const Tabata = (props) => {
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
-    <React.Fragment>
+    <>
       <LessMarginH1>Tabata</LessMarginH1>
       <DisplayRounds {...{ currRound }} totalRounds={numRounds} isRest={!isWorkTime}/>
       <DisplayTime {...{ hours, minutes, seconds }}/>
@@ -67,7 +67,7 @@ const Tabata = (props) => {
         <TimeInput disabled onChange={handleSetRestTime} hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
       </TimeInputLabel>
       <TimerControls {...{ startDisabled }}  resumeDisabled={disableResume}/>
-    </React.Fragment>
+    </>
   );
 }
 

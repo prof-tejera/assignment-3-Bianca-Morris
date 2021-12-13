@@ -44,7 +44,7 @@ const Stopwatch = (props) =>  {
   const disableResume = !!(hours || 0 === endHours || 0) && !!(minutes || 0 === endMinutes || 0 ) && !!(seconds || 0 === endSeconds || 0);
 
   return (
-    <React.Fragment>
+    <>
       <H1>Stopwatch</H1>
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
@@ -52,7 +52,7 @@ const Stopwatch = (props) =>  {
         <TimeInput disabled hoursVal={endHours} minutesVal={endMinutes} secondsVal={endSeconds} onChange={handleSetEndTime} />
       </TimeInputLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
-    </React.Fragment>
+    </>
   );
 }
 

@@ -24,7 +24,6 @@ const Countdown = (props) => {
     tickDown,
     setIsIncrementing,
     timerComplete,
-    // timerHasBeenStarted
   } = useContext(AppContext);
 
   const { startTime } = routineState[timerIdx];
@@ -42,7 +41,7 @@ const Countdown = (props) => {
   // const disableStart = noStartTimeInputted || endTimeEarlierThanStartTime;
 
   return (
-    <React.Fragment>
+    <>
       <H1>Countdown</H1>
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
@@ -50,7 +49,7 @@ const Countdown = (props) => {
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime} />
       </TimeInputLabel>
       <TimerControls startDisabled={noStartTimeInputted}/>
-    </React.Fragment>
+    </>
   );
 }
 

@@ -44,7 +44,7 @@ const XY = (props) => {
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
-    <React.Fragment>
+    <>
       <H1>XY</H1>
       <DisplayRounds {...{ currRound }} totalRounds={numRounds}/>
       <DisplayTime {...{ hours, minutes, seconds }} />
@@ -53,7 +53,7 @@ const XY = (props) => {
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
       </TimeInputLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
-    </React.Fragment>
+    </>
   );
 }
 

@@ -36,10 +36,10 @@ const Input = (props) => {
     };
 
     return (
-        <React.Fragment>
+        <>
             <HiddenLabel {...{ name }} ></HiddenLabel>
             <StyledInput onChange={validateChange} {...{ name, type, disabled, placeholder, value, min, max }} />
-        </React.Fragment>
+        </>
     );
 }
 Input.propTypes = {
