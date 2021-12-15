@@ -8,6 +8,7 @@ jobs:
   cypress-tests:
     name: Cypress Tests
     runs-on: ubuntu-latest
+    container: cypress/browsers:node12.18.0-chrome83-ff77
 
     steps:
       - uses: actions/checkout@v2
