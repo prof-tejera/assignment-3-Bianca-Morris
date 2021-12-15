@@ -91,17 +91,21 @@ function App() {
   };
 
   const checkForInvalidRoundTimes = useCallback(() => {
-    if (numRounds <= 0) {
-      // Invalid numRounds for Timer @index (must be >=1). Setting to 1 and re-loading.
-      console.log("invalid roundNums < 0");
-      handleChangeNumRounds(timerIdx, 1);
-    } else if (currRound > numRounds) {
-      // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
-      setCurrRound(numRounds);
-      console.log(`invalid currRound ${currRound} > numRounds ${numRounds}`);
+    const { type } = routineState[timerIdx] || {};
+    if (type === "Tabata" || type === "XY") {
+      if (numRounds <= 0) {
+        alert(`Invalid numRounds for Timer @${timerIdx} (must be >=1). Setting to 1 and re-loading.`)
+        handleChangeNumRounds(timerIdx, 1);
+        
+      } else if (currRound > numRounds) {
+        alert(`Invalid numRounds for Timer @ index (must be <= numRounds). Setting currRound ${currRound} equal to numRounds ${numRounds}.`)
+        // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
+        setCurrRound(numRounds);
+        // console.log(`invalid currRound ${currRound} > numRounds ${numRounds}`);
+      }
     }
     // valid
-  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx]);
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState]);
 
   useEffect(() => {
     checkForInvalidRoundTimes();
