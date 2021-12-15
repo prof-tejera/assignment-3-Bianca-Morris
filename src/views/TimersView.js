@@ -57,6 +57,15 @@ const TimerTitle = styled.div`
   text-transform: uppercase;
   font-weight: 700;
   font-family: SourceCodePro;
+
+  :hover {
+    ::before {
+      content: "(DELETE THIS TIMER)"
+    }
+
+    ${ props => (props.isTimerRunning || props.hasTimerStarted) ? "": `background-color: ${themeColors.btnDangerHover};\n`}
+    ${ props => (props.isTimerRunning || props.hasTimerStarted) ? "": `color: ${themeColors.textLight};` }
+  }
 `;
 
 const ActiveTimerTitle = styled(TimerTitle)`
@@ -70,11 +79,14 @@ const TimerSubtitle = styled.div`
 
 function App() {
   const {
+    dispatch,
     numRounds,
     handleChangeNumRounds,
     currRound,
     setCurrRound,
     timerIdx,
+    isTimerRunning,
+    hasTimerStarted,
     routineState = [],
     currRoutineStep,
     restartRoutine,
@@ -124,6 +136,13 @@ function App() {
   }
 
   if (!currRoutineStep) { throw new Error("Routine defined, but no current step. TimerIdx might be out of bounds.")};
+  
+  const deleteThisIndex = (idx) => {
+    if (!isTimerRunning) {
+      dispatch({ type: "removeTimer", indexToRemove: idx })
+    }
+  };
+
   const { type } = currRoutineStep;
 
   return (
@@ -133,14 +152,14 @@ function App() {
         { routineState.map((timer, idx) => {
           if (timerIdx === idx) {
             return (
-              <ActiveTimerTitle key={timer.uuid} {...{idx}}>
+              <ActiveTimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
                 {timer.type}
                 <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
               </ActiveTimerTitle>
             );
           }
           return (
-            <TimerTitle key={timer.uuid} {...{idx}}>
+            <TimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
               {timer.type}
               <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
             </TimerTitle>
