@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 
 import { AppContext } from "../../context/AppProvider";
 import { useInterval } from "../../utils/customReactHooks";
@@ -21,7 +21,6 @@ const Countdown = (props) => {
     isTimerRunning,
     handleSetStartTime,
     tickDown,
-    setIsIncrementing,
     timerComplete,
   } = useContext(AppContext);
 
@@ -31,9 +30,6 @@ const Countdown = (props) => {
   useInterval(() => {
     tickDown(timerComplete);
   }, isTimerRunning ? 1000 : null);
-
-  // On mount, ensure timer is set to decrement/tick down from startTime
-  useEffect(() => { setIsIncrementing(false); }, [setIsIncrementing]);
 
   const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
   // const endTimeEarlierThanStartTime = isTimeABeforeTimeB(startTime, [hours, minutes, seconds], true);

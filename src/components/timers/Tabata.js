@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 
 import { AppContext } from "../../context/AppProvider";
@@ -30,7 +30,6 @@ const Tabata = (props) => {
     handleSetWorkTime,
     handleSetRestTime,
     tickDown,
-    setIsIncrementing,
     currRound,
     tabataRoundComplete
   } = useContext(AppContext);
@@ -42,9 +41,6 @@ const Tabata = (props) => {
   useInterval(() => {
     tickDown(tabataRoundComplete);
   }, isTimerRunning ? 1000 : null);
-
-  // On mount, ensure timer is set to decrement/tick down from startTime
-  useEffect(() => { setIsIncrementing(false); }, [setIsIncrementing]);
 
   const noWorkTimeInputted = !workHours && !workMinutes && !workSeconds;
   const noRestTimeInputted = !restHours && !restMinutes && !restSeconds;

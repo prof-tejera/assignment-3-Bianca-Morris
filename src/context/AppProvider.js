@@ -15,13 +15,13 @@ const emptyTimer = ["", "", ""]; // [Hours, Minutes, Seconds]
 const getKeysToAddOnChangeType = (timerType) => {
   switch(timerType) {
     case 'Stopwatch':
-      return { endTime: emptyTimer };
+      return { endTime: emptyTimer, isIncrementing: true };
     case 'Countdown':
-      return { startTime: emptyTimer};
+      return { startTime: emptyTimer, isIncrementing: false };
     case 'Tabata':
-      return { workTime: emptyTimer, restTime: emptyTimer };
+      return { workTime: emptyTimer, restTime: emptyTimer, isIncrementing: false };
     case 'XY':
-      return { startTime: emptyTimer };
+      return { startTime: emptyTimer, isIncrementing: false };
     default:
       throw new Error("Unexpected timerType");
   }
@@ -33,7 +33,7 @@ const reducer = (state, action) => {
 
     switch(action.type) {
         case 'addTimer':
-            const initialState = { type: "Stopwatch", status: "not started", numRounds: 1, endTime: emptyTimer };
+            const initialState = { type: "Stopwatch", isIncrementing: true, numRounds: 1, endTime: emptyTimer };
             const stateWithId = {...initialState, uuid: uuidv4()};
             return [...state, stateWithId ];
         case 'removeTimer':
@@ -65,16 +65,15 @@ const reducer = (state, action) => {
 
 const AppProvider = ({ children }) => {
   const [ routineState, dispatch ] = useReducer(reducer, []);
-  const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineSatate to display
+  const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineState to display
 
   const currRoutineStep = routineState[timerIdx];
-  const { type, startTime, endTime, restTime, workTime, numRounds } = currRoutineStep || {};
+  const { type, startTime, endTime, restTime, workTime, numRounds, isIncrementing } = currRoutineStep || {};
 
   // State shared across all timers
   const [ hasStarted, setTimerHasStarted ] = usePersistedState('has-started', false); 
   const [ timer, setTimer ] = usePersistedState("timer", emptyTimer);
   const [ isTimerRunning, setTimerRunning ] = usePersistedState("is-timer-running", false);
-  const [ isIncrementing, setIsIncrementing ] = usePersistedState("is-incrementing", true); // if False, is decrementing
 
   // States specific to certain timers
   const [ currRound, setCurrRound ] = usePersistedState("curr-round", 1); // Used in Tabata and XY
@@ -415,7 +414,6 @@ const AppProvider = ({ children }) => {
         restTime,
         roundComplete,
         seconds,
-        setIsIncrementing,
         setTimerIdx,
         startTime,
         tabataRoundComplete,

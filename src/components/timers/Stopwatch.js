@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 
 import { AppContext } from "../../context/AppProvider";
 import { useInterval } from "../../utils/customReactHooks";
@@ -20,7 +20,6 @@ const Stopwatch = (props) =>  {
     hours,
     isTimerRunning,
     tickUp,
-    setIsIncrementing,
     handleSetEndTime,
   } = useContext(AppContext);
 
@@ -30,9 +29,6 @@ const Stopwatch = (props) =>  {
   useInterval(() => {
     tickUp();
   }, isTimerRunning ? 1000 : null);
-
-  // On mount, ensure timer is set to increment/tick up from 00:00:00
-  useEffect(() => { setIsIncrementing(true);}, [setIsIncrementing]);
 
   // Set some constraints to avoid strange state combos
   const noEndTimeInputted = !endHours && !endMinutes && !endSeconds;
