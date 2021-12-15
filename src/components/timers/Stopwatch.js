@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 
 import { AppContext } from "../../context/AppProvider";
 import { useInterval } from "../../utils/customReactHooks";
-import { isTimeABeforeTimeB } from "../../utils/helpers";
+// import { isTimeABeforeTimeB } from "../../utils/helpers";
 
 import { H1 } from "../../utils/tokensAndTheme";
 import DisplayTime from "../generic/DisplayTime";

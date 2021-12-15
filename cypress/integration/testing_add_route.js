@@ -1,6 +1,14 @@
-const baseHref = "http://localhost:3000";
+let baseHref;
 const timerTypes = ['stopwatch', 'countdown', 'tabata', 'xy'];
 const idPrefixGenerator = (timerType) => `[id^=${timerType}-]`;
+
+beforeEach(() => {
+  cy.fixture("./domain.json").then(domains =>{
+    const thisEnv = Cypress.env().env;
+    console.log("thisEnv", Cypress.env());
+    baseHref = domains[thisEnv] || "http://localhost:3000";
+  })
+ })
 
 describe('Creating Stopwatch timer works', () => {
   it('Visits the Add page', () => {

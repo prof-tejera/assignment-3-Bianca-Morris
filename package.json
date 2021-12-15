@@ -24,7 +24,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "cypress:open": "cypress open" 
+    "cypress:open": "cypress open --env env=prod",
+    "cypress:open-local": "cypress open --env env=dev"
   },
   "eslintConfig": {
     "extends": [

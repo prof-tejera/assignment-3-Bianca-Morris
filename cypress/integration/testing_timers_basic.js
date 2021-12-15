@@ -1,4 +1,11 @@
-const baseHref = "http://localhost:3000";
+let baseHref = "http://localhost:3000";
+beforeEach(() => {
+  cy.fixture("./domain.json").then(domains =>{
+    const thisEnv = Cypress.env().env;
+    console.log("thisEnv", Cypress.env());
+    baseHref = domains[thisEnv] || "http://localhost:3000";
+  })
+ })
 
 describe('Stopwatch Timer Works', () => {
   it('Displays as expected once created', () => {

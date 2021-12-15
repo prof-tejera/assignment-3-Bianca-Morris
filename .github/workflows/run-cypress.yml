@@ -1,0 +1,21 @@
+name: Generate Cypress Report
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  cypress-tests:
+    name: Cypress Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install cypress and verify
+        run: |
+          npm ci
+          $(npm bin)/cypress verify
+
+      - name: Run Cypress tests
+        run: npm run cypress:open
