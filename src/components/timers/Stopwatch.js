@@ -36,8 +36,8 @@ const Stopwatch = (props) =>  {
 
   // Set some constraints to avoid strange state combos
   const noEndTimeInputted = !endHours && !endMinutes && !endSeconds;
-  const endTimeEarlierThanStartTime = isTimeABeforeTimeB(endTime, [hours, minutes, seconds], true);
-  const disableStart = noEndTimeInputted || endTimeEarlierThanStartTime;
+  // const endTimeEarlierThanStartTime = isTimeABeforeTimeB(endTime, [hours, minutes, seconds], true);
+  // const disableStart = noEndTimeInputted || endTimeEarlierThanStartTime;
   const disableResume = !!(hours || 0 === endHours || 0) && !!(minutes || 0 === endMinutes || 0 ) && !!(seconds || 0 === endSeconds || 0);
 
   return (
