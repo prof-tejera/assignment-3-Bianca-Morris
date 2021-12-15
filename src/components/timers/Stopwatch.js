@@ -24,7 +24,7 @@ const Stopwatch = (props) =>  {
     handleSetEndTime,
   } = useContext(AppContext);
 
-  const { endTime } = currRoutineStep;
+  const { endTime, uuid } = currRoutineStep;
   const { 0: endHours, 1: endMinutes, 2: endSeconds } = endTime || [];
   
   useInterval(() => {
@@ -42,7 +42,7 @@ const Stopwatch = (props) =>  {
   const disableResume = !!(hours || 0 === endHours || 0) && !!(minutes || 0 === endMinutes || 0 ) && !!(seconds || 0 === endSeconds || 0);
 
   return (
-    <>
+    <div id={"stopwatch-" + uuid}>
       <H1>Stopwatch</H1>
       <DisplayTime {...{ hours, minutes, seconds }} />
       <TimeInputLabel>
@@ -50,7 +50,7 @@ const Stopwatch = (props) =>  {
         <TimeInput disabled hoursVal={endHours} minutesVal={endMinutes} secondsVal={endSeconds} onChange={handleSetEndTime} />
       </TimeInputLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
-    </>
+    </div>
   );
 }
 

@@ -35,7 +35,7 @@ const Tabata = (props) => {
     tabataRoundComplete
   } = useContext(AppContext);
 
-  const { workTime, restTime, numRounds } = currRoutineStep;
+  const { workTime, restTime, numRounds, uuid } = currRoutineStep;
   const { 0: workHours, 1: workMinutes, 2: workSeconds } = workTime || [];
   const { 0: restHours, 1: restMinutes, 2: restSeconds } = restTime || [];
 
@@ -53,7 +53,7 @@ const Tabata = (props) => {
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
-    <>
+    <div id={"tabata-" + uuid}>
       <LessMarginH1>Tabata</LessMarginH1>
       <DisplayRounds {...{ currRound }} totalRounds={numRounds} isRest={!isWorkTime}/>
       <DisplayTime {...{ hours, minutes, seconds }}/>
@@ -66,7 +66,7 @@ const Tabata = (props) => {
         <TimeInput disabled onChange={handleSetRestTime} hoursVal={restHours} minutesVal={restMinutes} secondsVal={restSeconds}/>
       </TimeInputLabel>
       <TimerControls {...{ startDisabled }}  resumeDisabled={disableResume}/>
-    </>
+    </div>
   );
 }
 

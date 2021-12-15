@@ -27,7 +27,7 @@ const XY = (props) => {
     roundComplete,
   } = useContext(AppContext);
 
-  const { startTime, numRounds } = currRoutineStep;
+  const { startTime, numRounds, uuid } = currRoutineStep; 
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {
@@ -43,7 +43,7 @@ const XY = (props) => {
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
-    <>
+    <div id={"xy-" + uuid}>
       <H1>XY</H1>
       <DisplayRounds {...{ currRound }} totalRounds={numRounds}/>
       <DisplayTime {...{ hours, minutes, seconds }} />
@@ -52,7 +52,7 @@ const XY = (props) => {
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
       </TimeInputLabel>
       <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
-    </>
+    </div>
   );
 }
 
