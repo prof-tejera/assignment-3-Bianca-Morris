@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/assignment-3-Bianca-Morris/static/css/main.d9e8592c.chunk.css",
+    "main.js": "/assignment-3-Bianca-Morris/static/js/main.3bcb9c36.chunk.js",
+    "main.js.map": "/assignment-3-Bianca-Morris/static/js/main.3bcb9c36.chunk.js.map",
+    "runtime-main.js": "/assignment-3-Bianca-Morris/static/js/runtime-main.9784d995.js",
+    "runtime-main.js.map": "/assignment-3-Bianca-Morris/static/js/runtime-main.9784d995.js.map",
+    "static/js/2.3f35494d.chunk.js": "/assignment-3-Bianca-Morris/static/js/2.3f35494d.chunk.js",
+    "static/js/2.3f35494d.chunk.js.map": "/assignment-3-Bianca-Morris/static/js/2.3f35494d.chunk.js.map",
+    "static/js/3.2e51a3b8.chunk.js": "/assignment-3-Bianca-Morris/static/js/3.2e51a3b8.chunk.js",
+    "static/js/3.2e51a3b8.chunk.js.map": "/assignment-3-Bianca-Morris/static/js/3.2e51a3b8.chunk.js.map",
+    "index.html": "/assignment-3-Bianca-Morris/index.html",
+    "static/css/main.d9e8592c.chunk.css.map": "/assignment-3-Bianca-Morris/static/css/main.d9e8592c.chunk.css.map",
+    "static/js/2.3f35494d.chunk.js.LICENSE.txt": "/assignment-3-Bianca-Morris/static/js/2.3f35494d.chunk.js.LICENSE.txt",
+    "static/js/3.2e51a3b8.chunk.js.LICENSE.txt": "/assignment-3-Bianca-Morris/static/js/3.2e51a3b8.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/assignment-3-Bianca-Morris/static/media/SourceCodePro-SemiBold.4d4c53c0.ttf",
+    "static/media/alarm.0ac31e5c.wav": "/assignment-3-Bianca-Morris/static/media/alarm.0ac31e5c.wav",
+    "static/media/restStart.54f09e8a.wav": "/assignment-3-Bianca-Morris/static/media/restStart.54f09e8a.wav",
+    "static/media/roundEnd.a673b70c.wav": "/assignment-3-Bianca-Morris/static/media/roundEnd.a673b70c.wav"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.9784d995.js",
+    "static/js/2.3f35494d.chunk.js",
+    "static/css/main.d9e8592c.chunk.css",
+    "static/js/main.3bcb9c36.chunk.js"
+  ]
+}
