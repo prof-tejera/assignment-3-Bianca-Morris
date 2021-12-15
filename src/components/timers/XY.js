@@ -27,7 +27,7 @@ const XY = (props) => {
     roundComplete,
   } = useContext(AppContext);
 
-  const { startTime, numRounds, uuid } = currRoutineStep; 
+  const { startTime, numRounds, uuid } = currRoutineStep;
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
   useInterval(() => {
@@ -38,8 +38,8 @@ const XY = (props) => {
   useEffect(() => { setIsIncrementing(false); }, [setIsIncrementing]);
 
   const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
-  const invalidRounds = currRound > numRounds;
-  const disableStart = noStartTimeInputted || invalidRounds;
+  // const invalidRounds = currRound > numRounds;
+  // const disableStart = noStartTimeInputted || invalidRounds;
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
@@ -51,7 +51,7 @@ const XY = (props) => {
         Start Time:
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
       </TimeInputLabel>
-      <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
+      <TimerControls startDisabled={noStartTimeInputted} resumeDisabled={disableResume} />
     </div>
   );
 }

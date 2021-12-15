@@ -38,7 +38,6 @@ const Stopwatch = (props) =>  {
   const noEndTimeInputted = !endHours && !endMinutes && !endSeconds;
   const endTimeEarlierThanStartTime = isTimeABeforeTimeB(endTime, [hours, minutes, seconds], true);
   const disableStart = noEndTimeInputted || endTimeEarlierThanStartTime;
-  // const disableInput = isTimerRunning || timerHasBeenStarted;
   const disableResume = !!(hours || 0 === endHours || 0) && !!(minutes || 0 === endMinutes || 0 ) && !!(seconds || 0 === endSeconds || 0);
 
   return (
@@ -49,7 +48,7 @@ const Stopwatch = (props) =>  {
         End Time: 
         <TimeInput disabled hoursVal={endHours} minutesVal={endMinutes} secondsVal={endSeconds} onChange={handleSetEndTime} />
       </TimeInputLabel>
-      <TimerControls startDisabled={disableStart} resumeDisabled={disableResume} />
+      <TimerControls startDisabled={noEndTimeInputted} resumeDisabled={disableResume} />
     </div>
   );
 }

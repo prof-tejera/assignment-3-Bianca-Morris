@@ -28,7 +28,7 @@ const TimerControls = (props) => {
     handleStart,
     handleReset,
     handleResume,
-    timerHasBeenStarted
+    hasStarted
   } = useContext(AppContext);
 
   const { 
@@ -47,7 +47,7 @@ const TimerControls = (props) => {
     return (
       <>
         <ButtonSpacer>
-            { timerHasBeenStarted &&
+            { hasStarted &&
                 <Button onClick={handleResume} disabled={resumeDisabled}>
                     <ButtonIconHolderRow>
                         <FontAwesomeIcon icon={faPlay} size="xs"/>
@@ -55,14 +55,14 @@ const TimerControls = (props) => {
                     </ButtonIconHolderRow>
                     
                 </Button>}
-            { !timerHasBeenStarted &&
+            { !hasStarted &&
                 <Button onClick={handleStart} disabled={startDisabled}>
                     <ButtonIconHolderRow>
                         <FontAwesomeIcon icon={faPlay} size="xs"/>
                         <span>START</span>
                     </ButtonIconHolderRow>
                 </Button>} 
-            { resetButton }
+            { hasStarted && resetButton }
         </ButtonSpacer>
       </>
     )

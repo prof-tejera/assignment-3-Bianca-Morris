@@ -11,7 +11,7 @@ const Time = styled.div`
 const DisplayTime = (props) => {
     const { hours, minutes, seconds } = props;
     return (
-        <Time id="display-time"> 
+        <Time id="display-time">
             {transformTimeUnitToDisplayString(hours || 0, "h")}:
             {transformTimeUnitToDisplayString(minutes || 0, "m")}:
             {transformTimeUnitToDisplayString(seconds|| 0, "s")}

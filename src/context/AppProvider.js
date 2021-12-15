@@ -19,9 +19,9 @@ const getKeysToAddOnChangeType = (timerType) => {
     case 'Countdown':
       return { startTime: emptyTimer};
     case 'Tabata':
-      return { workTime: emptyTimer, restTime: emptyTimer, numRounds: 1 };
+      return { workTime: emptyTimer, restTime: emptyTimer };
     case 'XY':
-      return { startTime: emptyTimer, numRounds: 1 };
+      return { startTime: emptyTimer };
     default:
       throw new Error("Unexpected timerType");
   }
@@ -33,7 +33,7 @@ const reducer = (state, action) => {
 
     switch(action.type) {
         case 'addTimer':
-            const initialState = { type: "Stopwatch", status: "not started", endTime: emptyTimer };
+            const initialState = { type: "Stopwatch", status: "not started", numRounds: 1, endTime: emptyTimer };
             const stateWithId = {...initialState, uuid: uuidv4()};
             return [...state, stateWithId ];
         case 'removeTimer':
@@ -68,9 +68,10 @@ const AppProvider = ({ children }) => {
   const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineSatate to display
 
   const currRoutineStep = routineState[timerIdx];
-  const { startTime, endTime, restTime, workTime, numRounds } = currRoutineStep || {};
+  const { type, startTime, endTime, restTime, workTime, numRounds } = currRoutineStep || {};
 
   // State shared across all timers
+  const [ hasStarted, setTimerHasStarted ] = usePersistedState('has-started', false); 
   const [ timer, setTimer ] = usePersistedState("timer", emptyTimer);
   const [ isTimerRunning, setTimerRunning ] = usePersistedState("is-timer-running", false);
   const [ isIncrementing, setIsIncrementing ] = usePersistedState("is-incrementing", true); // if False, is decrementing
@@ -85,8 +86,6 @@ const AppProvider = ({ children }) => {
   const [playRestStart] = useSound(restStartSound);
 
   const { 0: hours, 1: minutes, 2: seconds } = timer || [];
-
-  const timerHasBeenStarted = (!!hours || !!minutes || !!seconds) || (currRound !== 1) || !isWorkTime;
 
   /* Counting up the seconds from 00:00:00 to endTime */
   const tickUp = () => {
@@ -231,9 +230,11 @@ const AppProvider = ({ children }) => {
   }
 
   const handleStart = (e) => {
+    if (!hasStarted){
+      setTimerHasStarted(true);
+    }
     if (!isIncrementing) {
-      if (timerIdx !== 3) { // XY or Countdown
-        // start at start time
+      if (type === "XY" || type === "Countdown") {
         setTimer(startTime);
       } else { // Tabata
         if (isWorkTime) {
@@ -242,7 +243,7 @@ const AppProvider = ({ children }) => {
           setTimer(restTime);
         }
       }
-    }
+    } // If stopwatch, resume from current min, sec, hours
     setTimerRunning(true);
   }
 
@@ -256,7 +257,7 @@ const AppProvider = ({ children }) => {
 
   const handleReset = (e) => {
     handleStop();
-    setTimer(emptyTimer);
+    resetTimer(timerIdx);
     setCurrRound(1);
     setIsWorkTime(true);
   }
@@ -273,12 +274,12 @@ const AppProvider = ({ children }) => {
   }
 
   const restartRoutine = () => {
-    console.log("resettingRoutine");
     setTimerRunning(false);
-    if (timerIdx) { setTimerIdx(0); }
+    if (timerIdx) {setTimerIdx(0); }
     if (routineState.length > 0) { resetTimer(0); }
     setCurrRound(1);
     setIsWorkTime(true);
+    setTimerHasStarted(false);
   }
 
   const resetTimer = (idx) => {
@@ -291,34 +292,46 @@ const AppProvider = ({ children }) => {
         "Tabata": "workTime"
       };
       const timeToResetTo = thisTimer[mapTimerTypeToReset[type]];
-      console.log("resetting to", timeToResetTo, type)
       setTimer(timeToResetTo);
     } else {
       setTimer(emptyTimer);
     }
+    if (idx === 0) { setTimerHasStarted(false); }
   }
 
+  // Restart routine if end up in a situation where state is invalid (should only happen after editing routine)
   // TODO: more handling for previous states interfering with current run (HH:MM:SS leftover values)
-  if (!currRoutineStep && routineState.length > 0) { 
+  if (
+    (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
+    // (currRound > numRounds) // invalid round
+  ) { 
     // Leftover state from previous run interfering with current run; adjust start index and restart routine
-    // setTimerIdx(0);
+    // if (numRounds <= 0){
+    //   handleChangeNumRounds(timerIdx, 1);
+    // }
     restartRoutine();
   };
 
-  const multiplyTimerByValue = (timerA, value) => {
-    const arr = Array(value).fill(timerA);
-    return arr.reduce((a, i) => addTimers(a, i));
+  const multiplyTimerByValue = (thisTimer, value) => {
+    let total;
+    for (let i = 1; i <= value; i++) {
+      if (i === 1) {
+        total = [...thisTimer];
+      } else {
+        total = addTimers(total, [...thisTimer]);
+      }
+    }
+    return total;
   }
 
-  /** TODO: Needs to be updated with handling for empty string case */
   const addTimers = (timerA, timerB) => {
-    const { 0: hoursA, 1: minutesA, 2: secondsA } = timerA;
-    const { 0: hoursB, 1: minutesB, 2: secondsB } = timerB;
+    const { 0: hoursA, 1: minutesA, 2: secondsA } = timerA || [];
+    const { 0: hoursB, 1: minutesB, 2: secondsB } = timerB || [];
     
     // convert everything to seconds
-    const totalHoursInSec = (hoursA + hoursB) * 3600;
-    const totalMinutesInSec = (minutesA + minutesB) * 60;
-    const totalSec = totalHoursInSec + totalMinutesInSec + secondsA + secondsB;
+    const totalHoursInSec = ((hoursA || 0) + (hoursB || 0)) * 3600;
+    const totalMinutesInSec = ((minutesA || 0) + (minutesB || 0)) * 60;
+    const totalSec = totalHoursInSec + totalMinutesInSec + (secondsA || 0) + (secondsB || 0);
 
     // convert back
     const { 0: totalSecInHours = 0, 1: remainderFromHours = 0 } = convertSecondsToHours(totalSec);
@@ -327,7 +340,16 @@ const AppProvider = ({ children }) => {
   }
 
   const computeRoutineStepTime = (idx) => {
-    const { type, numRounds, startTime, workTime, restTime, endTime } = routineState[idx];
+    if (!routineState[idx]) { return emptyTimer };
+    const {
+      type,
+      numRounds = 1,
+      startTime = emptyTimer,
+      workTime = emptyTimer,
+      restTime = emptyTimer,
+      endTime = emptyTimer
+    } = routineState[idx];
+
     let stepTime;
     switch(type) {
       case "Stopwatch":
@@ -364,14 +386,15 @@ const AppProvider = ({ children }) => {
   }
 
   const displayTimeString = (time) => {
-    const { 0: hours, 1: minutes, 2: seconds } = time;
-    return `Hours: ${hours || "0"}, Minutes: ${minutes || "0"}, Seconds: ${seconds || "0"}`;
+    const { 0: hours, 1: minutes, 2: seconds } = time || [];
+    return `Hours: ${hours || 0}, Minutes: ${minutes || 0}, Seconds: ${seconds || 0}`;
   }
 
   return (
     <AppContext.Provider
       value={{
         currRound,
+        setCurrRound,
         endTime,
         handleChangeNumRounds,
         handleReset,
@@ -399,7 +422,7 @@ const AppProvider = ({ children }) => {
         tickDown,
         tickUp,
         timerComplete,
-        timerHasBeenStarted,
+        hasStarted,
         timerIdx,
         workTime,
         routineState,

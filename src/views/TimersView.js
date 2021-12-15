@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import styled from "styled-components";
 
 import Panel from "../components/generic/Panel";
@@ -70,6 +70,10 @@ const TimerSubtitle = styled.div`
 
 function App() {
   const {
+    numRounds,
+    handleChangeNumRounds,
+    currRound,
+    setCurrRound,
     timerIdx,
     routineState = [],
     currRoutineStep,
@@ -85,6 +89,23 @@ function App() {
     "XY": { C: <XY /> },
     "Tabata": { C: <Tabata /> },
   };
+
+  const checkForInvalidRoundTimes = useCallback(() => {
+    if (numRounds <= 0) {
+      // Invalid numRounds for Timer @index (must be >=1). Setting to 1 and re-loading.
+      console.log("invalid roundNums < 0");
+      handleChangeNumRounds(timerIdx, 1);
+    } else if (currRound > numRounds) {
+      // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
+      setCurrRound(numRounds);
+      console.log(`invalid currRound ${currRound} > numRounds ${numRounds}`);
+    }
+    // valid
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx]);
+
+  useEffect(() => {
+    checkForInvalidRoundTimes();
+  }, [checkForInvalidRoundTimes]);
 
   const routineDefined = routineState.length !== 0;
   if (!routineDefined) {

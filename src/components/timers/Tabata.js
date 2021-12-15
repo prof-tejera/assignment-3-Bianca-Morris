@@ -48,8 +48,7 @@ const Tabata = (props) => {
 
   const noWorkTimeInputted = !workHours && !workMinutes && !workSeconds;
   const noRestTimeInputted = !restHours && !restMinutes && !restSeconds;
-  const invalidRounds = currRound > numRounds;
-  const startDisabled = (noWorkTimeInputted && noRestTimeInputted) || invalidRounds; // allow to start as long as work or rest is present
+  const startDisabled = (noWorkTimeInputted && noRestTimeInputted); // allow to start as long as work or rest is present
   const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
 
   return (
