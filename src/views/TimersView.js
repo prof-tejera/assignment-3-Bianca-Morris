@@ -142,6 +142,7 @@ function App() {
             </TimerTitle>
           );
         })}
+          <Link to="/add"><Button variant="secondary" onClick={() => null}>Add to Routine</Button></Link>
         </RoutinePane>
         <Panel>
           { timers[type].C }

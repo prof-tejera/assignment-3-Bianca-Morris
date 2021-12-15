@@ -20,7 +20,8 @@ const Nav = styled.ul`
   margin: 0;
   padding: 0;
   background-color: #333333;
-
+  display: flex;
+  justify-content: space-between;
 `;
 
 const NavItem = styled.li`
@@ -53,9 +54,6 @@ function App() {
             </NavItem>
             <NavItem>
               <Link to="/docs">Documentation</Link>
-            </NavItem>
-            <NavItem>
-              <Link to="/add">Add to Routine</Link>
             </NavItem>
           </Nav>
         </nav>
