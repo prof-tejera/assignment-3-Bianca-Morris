@@ -63,4 +63,5 @@ export const themeColors = {
 export const H1 = styled.div`
     font-family: Lobster;
     font-size: 2rem;
+    text-align: center;
 `;
