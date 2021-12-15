@@ -1,8 +1,9 @@
-let baseHref = "http://localhost:3000";
+const { _, $ } = Cypress;
+
+let baseHref;
 beforeEach(() => {
   cy.fixture("./domain.json").then(domains =>{
     const thisEnv = Cypress.env().env;
-    console.log("thisEnv", Cypress.env());
     baseHref = domains[thisEnv] || "http://localhost:3000";
   })
  })
@@ -177,7 +178,7 @@ describe('Countdown Timer Works', () => {
     });
   });
 
-  describe.only('Tabata Timer Works', () => {
+  describe('Tabata Timer Works', () => {
     it('Displays as expected once created', () => {
       cy.visit(baseHref + '/add');
       cy.contains("Add New Timer").click();
@@ -252,5 +253,70 @@ describe('Countdown Timer Works', () => {
       cy.contains("SKIP").click();
       cy.contains("(Round: 2 of 2 - Rest)");
       cy.get("#display-time").should('contain', '00:00:00');
+    });
+  });
+
+  describe('Timers work in mixed order', () => {
+    it('Sets up timers properly', () => {
+      cy.visit(baseHref + '/add');
+      // add 5 timers
+      _.times(5, () => cy.contains("Add New Timer").click());
+      // ensure one of each type is selected
+      cy.get('select').eq(1).select('Tabata');
+      cy.get('select').eq(2).select('Countdown');
+      cy.get('select').eq(3).select('XY');
+      // populate with a few seconds each
+      cy.get('input').eq(2).click().type('2'); // Stopwatch
+      cy.get('input').eq(5).click().type('2'); // Tabata
+      cy.get('input').eq(8).click().type('1'); // Tabata
+      cy.get('input').eq(9).click().type('{backspace}').type('2'); // Tabata rounds
+      cy.get('input').eq(12).click().type('2'); // Countdown
+      cy.get('input').eq(15).click().type('2'); // XY
+      cy.get('input').eq(16).click().type('{backspace}').type('2'); // XY rounds
+      cy.get('input').eq(19).click().type('2'); // Stopwatch
+      // return to timers page and check that it makes sense.
+      cy.contains("Timers").click();
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.contains("Total Time: Hours: 0, Minutes: 0, Seconds: 16");
+    });
+
+    it('Runs timers as expected', () => {
+      cy.contains("START").click();
+      // First stopwatch
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:02');
+      // Tabata
+      cy.contains("(Round: 1 of 2)");
+      cy.get("#display-time").should('contain', '00:00:02');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.contains("(Round: 1 of 2 - Rest)");
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.contains("(Round: 2 of 2)");
+      cy.get("#display-time").should('contain', '00:00:02');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.contains("(Round: 2 of 2 - Rest)");
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      // Countdown
+      cy.get("#display-time").should('contain', '00:00:02');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      // XY
+      cy.contains("(Round: 1 of 2)");
+      cy.get("#display-time").should('contain', '00:00:02');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.contains("(Round: 2 of 2)");
+      cy.get("#display-time").should('contain', '00:00:02');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:00');
+      // Last stopwatch
+      cy.get("#display-time").should('contain', '00:00:00');
+      cy.get("#display-time").should('contain', '00:00:01');
+      cy.get("#display-time").should('contain', '00:00:02');
     });
   });
