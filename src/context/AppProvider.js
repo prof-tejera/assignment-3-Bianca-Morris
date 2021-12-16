@@ -1,10 +1,10 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import useSound from 'use-sound';
 
 import timerEndSound from '../sfx/alarm.wav';
 import restStartSound from '../sfx/restStart.wav';
 import roundEndSound from '../sfx/roundEnd.wav';
-import { usePersistedState } from '../utils/customReactHooks';
+import { usePersistedState, usePersistedReducer } from '../utils/customReactHooks';
 import { addTimers, multiplyTimerByValue } from '../utils/helpers';
 import { reducer } from '../components/reducers/routine';
 import { emptyTimer } from '../utils/constants';
@@ -12,7 +12,7 @@ import { emptyTimer } from '../utils/constants';
 export const AppContext = React.createContext({});
 
 const AppProvider = ({ children }) => {
-  const [ routineState, dispatch ] = useReducer(reducer, []);
+  const [ routineState, dispatch ] = usePersistedReducer(reducer, []);
   const [ timerIdx, setTimerIdx ] = usePersistedState("timer-idx", 0); // Timer from routineState to display
 
   const currRoutineStep = routineState[timerIdx];
@@ -190,11 +190,13 @@ const AppProvider = ({ children }) => {
   }
 
   const handleResume = (e) => {
-    if (!isIncrementing) {
+    // if (!isIncrementing) {
+      console.log("not incrementing");
       setTimerRunning(true);
-    } else {
-      handleStart(e);
-    }
+    // } else {
+      // console.log("incrementing");
+      // handleStart(e);
+    // }
   }
 
   const handleReset = (e) => {
@@ -353,6 +355,7 @@ const AppProvider = ({ children }) => {
         handleSkipToEnd,
         handleStart,
         handleStop,
+        setTimer,
         hours,
         isIncrementing,
         isTimerRunning,

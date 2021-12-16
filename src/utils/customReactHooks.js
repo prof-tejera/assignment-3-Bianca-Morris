@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import createPersistedReducer from 'use-persisted-reducer';
 
 /**
  * Borrowed from an example on Overreacted.io
@@ -55,3 +56,5 @@ export const usePersistedState = (key, initialValue) => {
   
     return [storedValue, setValue];
   };
+
+  export const usePersistedReducer = createPersistedReducer('routineState');
