@@ -7,7 +7,6 @@ import TimersView from "./views/TimersView";
 import AddView from "./views/AddView";
 
 import AppProvider from "./context/AppProvider";
-// import { H1 } from "./utils/tokensAndTheme";
 
 const Container = styled.div`
   background: #f0f6fb;

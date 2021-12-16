@@ -70,6 +70,38 @@ export const convertSecondsToMinutes = (sec) => {
   return [mins, leftovers];
 }
 
+export const multiplyTimerByValue = (thisTimer, value) => {
+  let total;
+  for (let i = 1; i <= value; i++) {
+    if (i === 1) {
+      total = [...thisTimer];
+    } else {
+      total = addTimers(total, [...thisTimer]);
+    }
+  }
+  return total;
+}
+
+export const addTimers = (timerA, timerB) => {
+  const { 0: hoursA, 1: minutesA, 2: secondsA } = timerA || [];
+  const { 0: hoursB, 1: minutesB, 2: secondsB } = timerB || [];
+  
+  // convert everything to seconds
+  const totalHoursInSec = ((hoursA || 0) + (hoursB || 0)) * 3600;
+  const totalMinutesInSec = ((minutesA || 0) + (minutesB || 0)) * 60;
+  const totalSec = totalHoursInSec + totalMinutesInSec + (secondsA || 0) + (secondsB || 0);
+
+  // convert back
+  const { 0: totalSecInHours = 0, 1: remainderFromHours = 0 } = convertSecondsToHours(totalSec);
+  const { 0: totalSecInMinutes = 0, 1: remainderFromMinutes = 0 } = convertSecondsToMinutes(remainderFromHours);
+  return [totalSecInHours, totalSecInMinutes, remainderFromMinutes];
+}
+
+export const displayTimeString = (time) => {
+  const { 0: hours, 1: minutes, 2: seconds } = time || [];
+  return `Hours: ${hours || 0}, Minutes: ${minutes || 0}, Seconds: ${seconds || 0}`;
+}
+
 /** 
  * DEPRECATED/UNUSED: These helpers are leftover from a previous attempt to use Javascript
  * DateTime for the timers (apparently more accurate to do it this way than simple interval)
@@ -83,7 +115,6 @@ export const convertHoursToSeconds = (hours) => {
   const seconds = hours * (60 * 60);
   return seconds;
 }
-
 
 export const convertMinutesToSeconds = (minutes) => {
   const seconds = minutes * 60;

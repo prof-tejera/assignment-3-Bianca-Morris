@@ -1,67 +1,15 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import useSound from 'use-sound';
-import { v4 as uuidv4 } from 'uuid';
 
 import timerEndSound from '../sfx/alarm.wav';
 import restStartSound from '../sfx/restStart.wav';
 import roundEndSound from '../sfx/roundEnd.wav';
 import { usePersistedState } from '../utils/customReactHooks';
-import { convertSecondsToHours, convertSecondsToMinutes } from '../utils/helpers';
+import { addTimers, multiplyTimerByValue } from '../utils/helpers';
+import { reducer } from '../components/reducers/routine';
+import { emptyTimer } from '../utils/constants';
 
 export const AppContext = React.createContext({});
-
-const emptyTimer = ["", "", ""]; // [Hours, Minutes, Seconds]
-
-const getKeysToAddOnChangeType = (timerType) => {
-  switch(timerType) {
-    case 'Stopwatch':
-      return { endTime: emptyTimer, isIncrementing: true };
-    case 'Countdown':
-      return { startTime: emptyTimer, isIncrementing: false };
-    case 'Tabata':
-      return { workTime: emptyTimer, restTime: emptyTimer, isIncrementing: false };
-    case 'XY':
-      return { startTime: emptyTimer, isIncrementing: false };
-    default:
-      throw new Error("Unexpected timerType");
-  }
-}
-
-const reducer = (state, action) => {
-    const { indexToChange, propName, newValue } = action;
-    const newState = [];
-
-    switch(action.type) {
-        case 'addTimer':
-            const initialState = { type: "Stopwatch", isIncrementing: true, numRounds: 1, endTime: emptyTimer };
-            const stateWithId = {...initialState, uuid: uuidv4()};
-            return [...state, stateWithId ];
-        case 'removeTimer':
-            return state.filter((timer, i) => i !== action.indexToRemove);
-        case 'clearAll':
-            return [];
-        case 'changePropVal':
-            for (let i=0; i < state.length; i++) {
-                if (i !== indexToChange) {
-                    newState.push(state[i]);
-                } else {
-                    let updated;
-                    if (propName === "type") {
-                      // add timer-specific props to state for new timer type (startTime, numRounds, etc.)
-                      const keysForNewType = getKeysToAddOnChangeType(newValue);
-                      updated = {...state[i], ...keysForNewType };
-                    } else {
-                      updated = {...state[i]};
-                    }
-                    updated[propName] = newValue;
-                    newState.push(updated);
-                }
-            }
-            return newState;
-        default:
-            throw new Error("Unexpected action passed into reducer.");
-    }
-}
 
 const AppProvider = ({ children }) => {
   const [ routineState, dispatch ] = useReducer(reducer, []);
@@ -204,7 +152,7 @@ const AppProvider = ({ children }) => {
     dispatch(action);
   }
 
-  const handleChangeNumRounds = (indexToChange, num) => {
+  const handleChangeNumRounds = useCallback((indexToChange, num) => {
     const numInt = parseInt(num || 0);
     if (!isNaN(numInt)) {
       dispatch({
@@ -214,7 +162,7 @@ const AppProvider = ({ children }) => {
         indexToChange
       });
     }
-  }
+  }, [dispatch]);
 
   const handleStop = (e) => {
     setTimerRunning(false);
@@ -267,15 +215,6 @@ const AppProvider = ({ children }) => {
     timerComplete();
   }
 
-  const restartRoutine = () => {
-    setTimerRunning(false);
-    if (timerIdx) {setTimerIdx(0); }
-    if (routineState.length > 0) { resetTimer(0); }
-    setCurrRound(1);
-    setIsWorkTime(true);
-    setTimerHasStarted(false);
-  }
-
   const resetTimer = (idx) => {
     const thisTimer = routineState[idx];
     const { type } = thisTimer;
@@ -293,6 +232,16 @@ const AppProvider = ({ children }) => {
     if (idx === 0) { setTimerHasStarted(false); }
   }
 
+  /** Starts the routine over, and clears state from previous runs */
+  const restartRoutine = () => {
+    setTimerRunning(false);
+    if (timerIdx) {setTimerIdx(0); }
+    if (routineState.length > 0) { resetTimer(0); }
+    setCurrRound(1);
+    setIsWorkTime(true);
+    setTimerHasStarted(false);
+  }
+
   const switchToNextTimer = () => {
     const newTimerIdx = timerIdx + 1;
     setTimerIdx(newTimerIdx);
@@ -305,42 +254,17 @@ const AppProvider = ({ children }) => {
     }      
   }
 
-  // Restart routine if end up in a situation where state is invalid (should only happen after editing routine)
-  if (
-    (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
-    // (currRound > numRounds) // invalid round
-  ) { 
-    // Leftover state from previous run interfering with current run; adjust start index and restart routine
-    restartRoutine();
+  const deleteTimerFromRoutine = (idx) => {
+    if (!isTimerRunning) {
+      dispatch({ type: "removeTimer", indexToRemove: idx })
+    }
   };
 
-  const multiplyTimerByValue = (thisTimer, value) => {
-    let total;
-    for (let i = 1; i <= value; i++) {
-      if (i === 1) {
-        total = [...thisTimer];
-      } else {
-        total = addTimers(total, [...thisTimer]);
-      }
-    }
-    return total;
-  }
-
-  const addTimers = (timerA, timerB) => {
-    const { 0: hoursA, 1: minutesA, 2: secondsA } = timerA || [];
-    const { 0: hoursB, 1: minutesB, 2: secondsB } = timerB || [];
-    
-    // convert everything to seconds
-    const totalHoursInSec = ((hoursA || 0) + (hoursB || 0)) * 3600;
-    const totalMinutesInSec = ((minutesA || 0) + (minutesB || 0)) * 60;
-    const totalSec = totalHoursInSec + totalMinutesInSec + (secondsA || 0) + (secondsB || 0);
-
-    // convert back
-    const { 0: totalSecInHours = 0, 1: remainderFromHours = 0 } = convertSecondsToHours(totalSec);
-    const { 0: totalSecInMinutes = 0, 1: remainderFromMinutes = 0 } = convertSecondsToMinutes(remainderFromHours);
-    return [totalSecInHours, totalSecInMinutes, remainderFromMinutes];
-  }
-
+ /**
+  * Computes the total time for any individual step in the routine 
+  * @param {Number} idx - index of step in routine to calculate time for
+  * @returns {Array} representing a single timer
+  */
   const computeRoutineStepTime = (idx) => {
     if (!routineState[idx]) { return emptyTimer };
     const {
@@ -387,10 +311,31 @@ const AppProvider = ({ children }) => {
     return totalTime;
   }
 
-  const displayTimeString = (time) => {
-    const { 0: hours, 1: minutes, 2: seconds } = time || [];
-    return `Hours: ${hours || 0}, Minutes: ${minutes || 0}, Seconds: ${seconds || 0}`;
-  }
+  const checkForInvalidRoundTimes = useCallback(() => {
+    const { type } = routineState[timerIdx] || {};
+    if (type === "Tabata" || type === "XY") {
+      if (numRounds <= 0) {
+        alert(`Invalid numRounds for Timer @${timerIdx} (must be >=1). Setting to 1 and re-loading.`)
+        handleChangeNumRounds(timerIdx, 1);
+        
+      } else if (currRound > numRounds) {
+        alert(`Invalid numRounds for Timer @ index (must be <= numRounds). Setting currRound ${currRound} equal to numRounds ${numRounds}.`)
+        // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
+        setCurrRound(numRounds);
+        // console.log(`invalid currRound ${currRound} > numRounds ${numRounds}`);
+      }
+    }
+    // valid
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState]);
+
+   // Restart routine if end up in a situation where state is invalid (should only happen after editing routine)
+   if (
+    (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
+    // (currRound > numRounds) // invalid round
+  ) { 
+    // Leftover state from previous run interfering with current run; adjust start index and restart routine
+    restartRoutine();
+  };
 
   return (
     <AppContext.Provider
@@ -431,8 +376,9 @@ const AppProvider = ({ children }) => {
         restartRoutine,
         computeRoutineStepTime,
         computeTotalRoutineTime,
-        displayTimeString,
-        currRoutineStep
+        currRoutineStep,
+        deleteTimerFromRoutine,
+        checkForInvalidRoundTimes
       }}
     >
       {children}
