@@ -51,7 +51,7 @@ describe('Stopwatch Timer Works', () => {
     cy.get("#display-time").wait(1000).should('not.contain', '00:00:03');
     cy.contains("RESUME").click();
     cy.get("#display-time").should('contain', '00:00:03');
-    cy.contains("SKIP").click();
+    cy.contains("FF").click();
     cy.get("#display-time").should('contain', '00:00:00');
     cy.get("#display-time").should('contain', '00:00:01');
     cy.get("#display-time").should('contain', '00:00:02');
@@ -105,7 +105,7 @@ describe('Countdown Timer Works', () => {
       cy.get("#display-time").wait(1000).should('not.contain', '00:00:02');
       cy.contains("RESUME").click();
       cy.get("#display-time").should('contain', '00:00:02');
-      cy.contains("SKIP").click();
+      cy.contains("FF").click();
       cy.get("#display-time").should('contain', '00:00:03');
       cy.get("#display-time").should('contain', '00:00:02');
       cy.get("#display-time").should('contain', '00:00:01');
@@ -171,9 +171,9 @@ describe('Countdown Timer Works', () => {
       cy.contains("(Round: 2 of 2)");
       cy.get("#display-time").should('contain', '00:00:03');
       cy.get("#display-time").should('contain', '00:00:02');
-      cy.contains("SKIP").click();
+      cy.contains("FF").click();
       cy.contains("(Round: 1 of 1)");
-      cy.contains("SKIP").click();
+      cy.contains("FF").click();
       cy.get("#display-time").should('contain', '00:00:00');
     });
   });
@@ -248,9 +248,9 @@ describe('Countdown Timer Works', () => {
       cy.contains("(Round: 2 of 2)");
       cy.get("#display-time").should('contain', '00:00:03');
       cy.get("#display-time").should('contain', '00:00:02');
-      cy.contains("SKIP").click();
+      cy.contains("FF").click();
       cy.contains("(Round: 1 of 2)");
-      cy.contains("SKIP").click();
+      cy.contains("FF").click();
       cy.contains("(Round: 2 of 2 - Rest)");
       cy.get("#display-time").should('contain', '00:00:00');
     });

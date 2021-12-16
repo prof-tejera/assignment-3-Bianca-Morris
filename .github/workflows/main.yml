@@ -17,5 +17,3 @@ jobs:
         with:
           build: npm run build
           start: npm start
-      - name: Cypress tests
-        run: npm run cypress:open
