@@ -5,7 +5,6 @@ const idPrefixGenerator = (timerType) => `[id^=${timerType}-]`;
 beforeEach(() => {
   cy.fixture("./domain.json").then(domains =>{
     const thisEnv = Cypress.env().env;
-    console.log("thisEnv", Cypress.env());
     baseHref = domains[thisEnv] || "http://localhost:3000";
   })
  })

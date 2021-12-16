@@ -298,10 +298,9 @@ const AppProvider = ({ children }) => {
     setTimerIdx(newTimerIdx);
 
     if (isTimerRunning && routineState.length > 0) {
-      // Update states and trigger next round 
+      // Update states and trigger next timer
       setCurrRound(1);
       setIsWorkTime(true);
-      console.log("timerIdx", newTimerIdx);
       resetTimer(newTimerIdx);
     }      
   }

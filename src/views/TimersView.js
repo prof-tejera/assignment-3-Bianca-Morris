@@ -150,23 +150,23 @@ function App() {
     <Wrapper>
       <Timers>
         <RoutinePane >
-        { routineState.map((timer, idx) => {
-          if (timerIdx === idx) {
+          <Link to="/add"><Button variant="secondary" onClick={() => null}>Add to Routine</Button></Link>
+          { routineState.map((timer, idx) => {
+            if (timerIdx === idx) {
+              return (
+                <ActiveTimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
+                  {timer.type}
+                  <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
+                </ActiveTimerTitle>
+              );
+            }
             return (
-              <ActiveTimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
+              <TimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
                 {timer.type}
                 <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
-              </ActiveTimerTitle>
+              </TimerTitle>
             );
-          }
-          return (
-            <TimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
-              {timer.type}
-              <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
-            </TimerTitle>
-          );
-        })}
-          <Link to="/add"><Button variant="secondary" onClick={() => null}>Add to Routine</Button></Link>
+          })}
         </RoutinePane>
         <Panel>
           { timers[type].C }

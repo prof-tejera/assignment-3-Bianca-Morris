@@ -82,7 +82,7 @@ const TimerControls = (props) => {
             <Button onClick={handleSkipToEnd}>
                 <ButtonIconHolderRow>
                     <FontAwesomeIcon icon={faFastForward} size="xs"/>
-                    <span>SKIP</span>
+                    <span>FF</span>
                 </ButtonIconHolderRow>
             </Button> }
       </ButtonSpacer>
