@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { AppContext } from "../../context/AppProvider";
 import { useInterval } from "../../utils/customReactHooks";
-// import { isTimeABeforeTimeB } from "../../utils/helpers";
+import { isTimeABeforeTimeB } from "../../utils/helpers";
 
 import { H1 } from "../../utils/tokensAndTheme";
 import DisplayTime from "../generic/DisplayTime";
@@ -14,6 +14,10 @@ import TimerControls from "../generic/TimerControls";
  */
 const Countdown = (props) => {
   const {
+    setTimer,
+    hasStarted,
+    timerIdx,
+    routineState,
     currRoutineStep,
     hours,
     minutes,
@@ -27,13 +31,23 @@ const Countdown = (props) => {
   const { startTime, uuid } = currRoutineStep;
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
 
+  // Set some constraints to avoid strange state combos
+  const noTimeOnClock = !hours && !minutes && !seconds;
+  const lastTimerInList = timerIdx === routineState.length - 1;
+  const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
+  const startTimeEarlierThanCurrTime = isTimeABeforeTimeB(startTime, [hours, minutes, seconds], false);
+
+  const disableResume = startTimeEarlierThanCurrTime || (noTimeOnClock && lastTimerInList);
+
   useInterval(() => {
     tickDown(timerComplete);
   }, isTimerRunning ? 1000 : null);
 
-  const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
-  // const endTimeEarlierThanStartTime = isTimeABeforeTimeB(startTime, [hours, minutes, seconds], true);
-  // const disableStart = noStartTimeInputted || endTimeEarlierThanStartTime;
+  useEffect(() => { // Should only run once... when setting up timer, before starting
+    if (!hasStarted && timerIdx === 0 && noTimeOnClock) {
+      setTimer(startTime);
+    }
+  }, [hasStarted, timerIdx, noTimeOnClock, startTime, setTimer]);
 
   return (
     <div id={"countdown-" + uuid}>
@@ -43,7 +57,7 @@ const Countdown = (props) => {
         Start Time:
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime} />
       </TimeInputLabel>
-      <TimerControls startDisabled={noStartTimeInputted}/>
+      <TimerControls startDisabled={noStartTimeInputted} hideResume={disableResume} />
     </div>
   );
 }

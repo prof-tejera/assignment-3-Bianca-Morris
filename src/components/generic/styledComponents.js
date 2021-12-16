@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+/**
+ * Decided to try this towards the end of the project; if I had more time, I'd add more props to it and replace most of the basic
+ * positioning/layout styled components with it, and pass the details in as props.
+ */
 export const CustomDiv = styled.div`
   display: flex;
   ${ props => props.justifyContent ? `justify-content: ${props.justifyContent};\n` : "justify-content: center;\n" }

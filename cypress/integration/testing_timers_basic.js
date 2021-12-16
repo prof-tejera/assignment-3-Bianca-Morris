@@ -67,7 +67,7 @@ describe('Countdown Timer Works', () => {
       cy.get('input').last().click().type('5');
       cy.contains("Timers").click();
       cy.contains("START").should('not.have.attr', 'disabled');
-      cy.get("#display-time").should('contain', '00:00:00');
+      cy.get("#display-time").should('contain', '00:00:05');
       cy.get('input').last().should("have.value", '5');
     });
   
@@ -124,7 +124,7 @@ describe('Countdown Timer Works', () => {
       cy.get('input').last().click().type('{backspace}').type('{backspace}').type('2');
       cy.contains("Timers").click();
       cy.contains("START").should('not.have.attr', 'disabled');
-      cy.get("#display-time").should('contain', '00:00:00');
+      cy.get("#display-time").should('contain', '00:00:03');
       cy.get('input').last().should("have.value", '3');
       cy.contains("(Round: 1 of 2)");
     });
@@ -188,7 +188,7 @@ describe('Countdown Timer Works', () => {
       cy.get('input').last().click().type('{backspace}').type('{backspace}').type('2');
       cy.contains("Timers").click();
       cy.contains("START").should('not.have.attr', 'disabled');
-      cy.get("#display-time").should('contain', '00:00:00');
+      cy.get("#display-time").should('contain', '00:00:03');
       cy.get('input').eq(2).should("have.value", '3');
       cy.get('input').eq(5).should("have.value", '2');
       cy.contains("(Round: 1 of 2)");

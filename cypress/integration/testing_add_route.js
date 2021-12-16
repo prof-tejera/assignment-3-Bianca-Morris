@@ -68,7 +68,7 @@ describe('Creating Countdown timer works', () => {
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[1])).should('exist');
     cy.contains("START").should('not.have.attr', 'disabled');
-    cy.get("#display-time").should('contain', '00:00:00');
+    cy.get("#display-time").should('contain', '05:00:00');
     cy.get('input').first().should("have.value", '5');
   });
 
@@ -106,7 +106,7 @@ describe('Creating XY timer works', () => {
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[3])).should('exist');
     cy.contains("START").should('not.have.attr', 'disabled');
-    cy.get("#display-time").should('contain', '00:00:00');
+    cy.get("#display-time").should('contain', '05:00:00');
     cy.get('input').first().should("have.value", '5');
     cy.contains("(Round: 1 of 1)"); // invalid input (0 or any symbols) should default to numRounds = 1
   });
@@ -146,7 +146,7 @@ describe('Creating Tabata timer works', () => {
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[2])).should('exist');
     cy.contains("START").should('not.have.attr', 'disabled');
-    cy.get("#display-time").should('contain', '00:00:00');
+    cy.get("#display-time").should('contain', '00:05:00');
     cy.get('input').eq(1).should("have.value", '5');
     cy.get('input').eq(3).should("have.value", '2');
     cy.contains("(Round: 1 of 1)"); // invalid input (0 or any symbols) should default to numRounds = 1

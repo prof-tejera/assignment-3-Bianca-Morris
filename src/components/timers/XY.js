@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { AppContext } from "../../context/AppProvider";
 import { useInterval } from "../../utils/customReactHooks";
@@ -8,6 +8,7 @@ import DisplayTime from "../generic/DisplayTime";
 import DisplayRounds from "../generic/DisplayRounds";
 import TimeInput, { TimeInputLabel } from "../generic/TimeInput";
 import TimerControls from "../generic/TimerControls";
+import { isTimeABeforeTimeB } from "../../utils/helpers";
 
 /**
  * A timer that counts down from starTime per round, for numRounds number of rounds
@@ -15,6 +16,10 @@ import TimerControls from "../generic/TimerControls";
  */
 const XY = (props) => {
   const {
+    hasStarted,
+    setTimer,
+    routineState,
+    timerIdx,
     currRoutineStep,
     hours,
     minutes,
@@ -28,15 +33,25 @@ const XY = (props) => {
 
   const { startTime, numRounds, uuid } = currRoutineStep;
   const { 0: startHours, 1: startMinutes, 2: startSeconds } = startTime || [];
+  
+  // Set some constraints to avoid strange state combos
+  const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
+  const noTimeOnClock = !hours && !minutes && !seconds;
+  const lastTimerInList = timerIdx === routineState.length - 1;
+  const atEndOfRound = (numRounds === currRound) && noTimeOnClock;
+  const startTimeEarlierThanCurrTime = isTimeABeforeTimeB(startTime, [hours, minutes, seconds], false);
+
+  const disableResume = startTimeEarlierThanCurrTime || (noTimeOnClock && lastTimerInList && atEndOfRound);
 
   useInterval(() => {
     tickDown(roundComplete);
   }, isTimerRunning ? 1000 : null);
 
-  const noStartTimeInputted = !startHours && !startMinutes && !startSeconds;
-  // const invalidRounds = currRound > numRounds;
-  // const disableStart = noStartTimeInputted || invalidRounds;
-  const disableResume = numRounds === currRound && (!hours && !minutes && !seconds);
+  useEffect(() => { // Should only run once... when setting up timer, before starting
+    if (!hasStarted && timerIdx === 0 && noTimeOnClock && currRound === 1) {
+      setTimer(startTime);
+    }
+  }, [hasStarted, timerIdx, noTimeOnClock, startTime, setTimer, currRound]);
 
   return (
     <div id={"xy-" + uuid}>
@@ -47,7 +62,7 @@ const XY = (props) => {
         Start Time:
         <TimeInput disabled hoursVal={startHours} minutesVal={startMinutes} secondsVal={startSeconds} onChange={handleSetStartTime}/>
       </TimeInputLabel>
-      <TimerControls startDisabled={noStartTimeInputted} resumeDisabled={disableResume} />
+      <TimerControls startDisabled={noStartTimeInputted} hideResume={disableResume} />
     </div>
   );
 }

@@ -32,7 +32,7 @@ const TimerControls = (props) => {
   } = useContext(AppContext);
 
   const { 
-    stopDisabled, startDisabled, resetDisabled, resumeDisabled
+    stopDisabled, startDisabled, resetDisabled, resumeDisabled, hideResume, hideReset
   } = props;
 
   const resetButton = (
@@ -47,13 +47,12 @@ const TimerControls = (props) => {
     return (
       <>
         <ButtonSpacer>
-            { hasStarted &&
+            { (hasStarted && !hideResume) &&
                 <Button onClick={handleResume} disabled={resumeDisabled}>
                     <ButtonIconHolderRow>
                         <FontAwesomeIcon icon={faPlay} size="xs"/>
                         <span>RESUME</span>
                     </ButtonIconHolderRow>
-                    
                 </Button>}
             { !hasStarted &&
                 <Button onClick={handleStart} disabled={startDisabled}>
@@ -62,7 +61,7 @@ const TimerControls = (props) => {
                         <span>START</span>
                     </ButtonIconHolderRow>
                 </Button>} 
-            { hasStarted && resetButton }
+            { hasStarted && !hideReset && resetButton }
         </ButtonSpacer>
       </>
     )
@@ -77,7 +76,7 @@ const TimerControls = (props) => {
                     <span>STOP</span>
                 </ButtonIconHolderRow>
             </Button>} 
-        { resetButton }
+        { !hideReset && resetButton }
         { isTimerRunning && 
             <Button onClick={handleSkipToEnd}>
                 <ButtonIconHolderRow>

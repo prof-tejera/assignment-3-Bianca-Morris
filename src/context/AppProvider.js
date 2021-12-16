@@ -314,12 +314,18 @@ const AppProvider = ({ children }) => {
   }
 
   const checkForInvalidRoundTimes = useCallback(() => {
-    const { type } = routineState[timerIdx] || {};
-    if (type === "Tabata" || type === "XY") {
+    const { type, workTime } = routineState[timerIdx] || {};
+    const isTabata = type === "Tabata";
+    if (isTabata || type === "XY") {
       if (numRounds <= 0) {
-        alert(`Invalid numRounds for Timer @${timerIdx} (must be >=1). Setting to 1 and re-loading.`)
+        alert(`Invalid numRounds for Timer (must be >=1). Setting to 1 and re-loading.`)
         handleChangeNumRounds(timerIdx, 1);
-        
+        resetTimer(timerIdx)
+        if (isTabata) {
+          // also force switch back to work time
+          setTimer(workTime);
+          setIsWorkTime(true);
+        }
       } else if (currRound > numRounds) {
         alert(`Invalid numRounds for Timer @ index (must be <= numRounds). Setting currRound ${currRound} equal to numRounds ${numRounds}.`)
         // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
@@ -328,12 +334,11 @@ const AppProvider = ({ children }) => {
       }
     }
     // valid
-  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState]);
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer]);
 
-   // Restart routine if end up in a situation where state is invalid (should only happen after editing routine)
-   if (
+  // Auto-Restart routine if end up in a situation where state is invalid (should only happen after certain edits to routine)
+  if (
     (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
-    // (currRound > numRounds) // invalid round
   ) { 
     // Leftover state from previous run interfering with current run; adjust start index and restart routine
     restartRoutine();

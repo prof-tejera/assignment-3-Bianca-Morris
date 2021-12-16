@@ -78,6 +78,7 @@ const TimerSubtitle = styled.div`
 
 function App() {
   const {
+    hasStarted,
     timerIdx,
     isTimerRunning,
     hasTimerStarted,
@@ -109,12 +110,10 @@ function App() {
   if (!currRoutineStep) { throw new Error("Routine defined, but no current step. TimerIdx might be out of bounds.")};
 
   const { type } = currRoutineStep;
-
   return (
     <Wrapper>
       <Timers>
-        <RoutinePane >
-          <Link to="/add"><Button variant="secondary" onClick={nullFx}>Add to Routine</Button></Link>
+        <RoutinePane>
           { routineState.map((timer, idx) => {
             if (timerIdx === idx) {
               return (
@@ -131,13 +130,14 @@ function App() {
               </TimerTitle>
             );
           })}
+          <Link to="/add"><Button variant="secondary" onClick={nullFx}>Add to Routine</Button></Link>
         </RoutinePane>
         <Panel>
           { timerToJSX[type].C }
         </Panel>
       </Timers>
       <BottomPanel>
-        { timerIdx !== 0 ? 
+        { hasStarted ? 
           <Button onClick={() => restartRoutine()}>Restart Routine</Button>
           : null }
         <TimerSubtitle>Total Time: {displayTimeString(computeTotalRoutineTime())}</TimerSubtitle>
