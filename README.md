@@ -67,3 +67,52 @@ For other ways to deploy see https://github.com/prof-tejera/react-deployment-cod
 ## Bonus
 
 - Add full test coverage using Cypress.io. This will require that you get your tests running locally and then add a new Github action that will run the tests every time you commit to GitHub. Note that the Cypress setup is not part of this project and must be configured by you (max 8 points)
+
+
+## References and Notes
+
+[Link to Deployed project](https://prof-tejera.github.io/assignment-3-Bianca-Morris)
+
+As before, I used a bunch of extra libraries and assets:
+
+**Newly added:**
+- [UsePersistedReducer NPM package](https://www.npmjs.com/package/use-persisted-reducer)
+- [UUID NPM package](https://www.npmjs.com/package/uuid)
+- [Cypress NPM package](https://www.npmjs.com/package/cypress)
+
+**Newly referenced:**
+- Cypress Docs
+- https://infinitypaul.medium.com/reactjs-useeffect-usecallback-simplified-91e69fb0e7a3
+- https://stackoverflow.com/questions/39549424/how-to-create-unique-keys-for-react-elements
+- https://medium.com/trabe/react-usereducer-hook-2b1331bb768
+- https://applitools.com/blog/testing-browser-alerts-confirmations-prompts-cypress/
+- https://thewebdev.info/2021/03/14/how-to-set-state-with-a-deeply-nested-objects-with-react-hooks/
+
+Alongside the ones from previous iterations...
+
+**Art & Sound:**
+- Background Image by Maarten van den Heuvel @ [unsplash](https://unsplash.com/@mvdheuvel)
+- Alarm sounds from [mixkit](https://mixkit.co/free-sound-effects/alarm/)
+- Iconography from [fontawesome](https://fontawesome.com/)
+
+**Libraries & Re-used Code:**
+- Use sound npm package/react hook by [Josh Comeau](https://www.joshwcomeau.com/react/announcing-use-sound-react-hook/)
+- UseInterval react hook by [Dan Abramov](https://overreacted.io/making-setinterval-declarative-with-react-hooks/)
+- UsePersistedState react hook by [Prof Tejera](https://github.com/prof-tejera/react7/blob/main/src/hooks.js)
+
+**References, Research, & Inspiration:**
+I got a bunch of ideas for how to construct a clean data model and solve various implementation problems from the following sources:
+- https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
+- https://stackoverflow.com/questions/13802587/how-can-i-convert-a-hhmmss-string-to-a-javascript-date-object
+- https://stackoverflow.com/questions/51145692/styled-component-not-taking-props
+- https://stackoverflow.com/questions/51770246/how-to-validate-numeric-inputs-in-reactjs
+- https://stackoverflow.com/questions/55763957/how-to-clean-up-setinterval-in-useeffect-using-react-hooks/55764160
+- https://stackoverflow.com/questions/53859601/how-do-i-clearinterval-on-click-with-react-hooks/55659592
+- https://stackoverflow.com/questions/55020041/react-hooks-useeffect-cleanup-for-only-componentwillunmount
+- https://medium.com/bb-tutorials-and-thoughts/how-to-create-a-countdown-timer-in-react-app-e99916046292
+- https://javascript.plainenglish.io/this-is-how-i-created-a-countdown-timer-app-in-react-3644afbaabf6
+- FontAwesome documentation
+- React documentation
+- MDN web documentation (Javascript)
+
+Thanks to Brandon for helping with a stale state update bug.
