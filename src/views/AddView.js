@@ -8,8 +8,8 @@ import { CustomDiv, Scrollable } from "../components/generic/styledComponents";
 import { H1 } from "../utils/tokensAndTheme";
 import { EditBlock } from "../components/add/EditBlock";
 import Button from "../components/generic/Button";
-// import { Link } from "react-router-dom";
-// import { nullFx } from "../utils/constants";
+import { Link } from "react-router-dom";
+import { nullFx } from "../utils/constants";
 
 
 const AddView = () => {
@@ -19,14 +19,14 @@ const AddView = () => {
         <CustomDiv flexDirection="column" alignItems="center" justifyContent="center">
             <H1>Add to Workout Routine</H1>
 
-            {/* <CustomDiv alignItems="center" justifyContent="center" marginTop="10px" marginBottom="10px">
+            <CustomDiv alignItems="center" justifyContent="center" marginTop="10px" marginBottom="10px">
                <Link to="/">
                     <Button variant="secondary" onClick={nullFx}>
                         <FontAwesomeIcon icon={faArrowLeft} size="xs"/>
                         Back to Timers
                     </Button>
                 </Link>
-            </CustomDiv> */}
+            </CustomDiv>
 
             <Scrollable>
                 {routineState.map((timer, i) => {

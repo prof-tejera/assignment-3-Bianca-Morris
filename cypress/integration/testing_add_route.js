@@ -37,7 +37,7 @@ describe('Creating Stopwatch timer works', () => {
 
   it('Can delete stopwatch', () => {
     cy.contains("Add to Routine").click();
-    cy.get('button').first().click();
+    cy.get('button').eq(1).click();
     cy.get('input').should('not.exist');
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[0])).should('not.exist');
@@ -74,7 +74,7 @@ describe('Creating Countdown timer works', () => {
 
   it('Can delete countdown', () => {
     cy.contains("Add to Routine").click();
-    cy.get('button').first().click();
+    cy.get('button').eq(1).click();
     cy.get('input').should('not.exist');
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[1])).should('not.exist');
@@ -113,7 +113,7 @@ describe('Creating XY timer works', () => {
 
   it('Can delete XY', () => {
     cy.contains("Add to Routine").click();
-    cy.get('button').first().click();
+    cy.get('button').eq(1).click();
     cy.get('input').should('not.exist');
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[3])).should('not.exist');
@@ -154,7 +154,7 @@ describe('Creating Tabata timer works', () => {
 
   it('Can delete Tabata timer', () => {
     cy.contains("Add to Routine").click();
-    cy.get('button').first().click();
+    cy.get('button').eq(1).click();
     cy.get('input').should('not.exist');
     cy.contains("Timers").click();
     cy.get(idPrefixGenerator(timerTypes[2])).should('not.exist');
