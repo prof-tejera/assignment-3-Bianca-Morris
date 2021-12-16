@@ -191,7 +191,6 @@ const AppProvider = ({ children }) => {
 
   const handleResume = (e) => {
     // if (!isIncrementing) {
-      console.log("not incrementing");
       setTimerRunning(true);
     // } else {
       // console.log("incrementing");
@@ -314,18 +313,20 @@ const AppProvider = ({ children }) => {
   }
 
   const checkForInvalidRoundTimes = useCallback(() => {
-    const { type, workTime } = routineState[timerIdx] || {};
+    const { type, workTime, startTime } = routineState[timerIdx] || {};
     const isTabata = type === "Tabata";
     if (isTabata || type === "XY") {
       if (numRounds <= 0) {
         alert(`Invalid numRounds for Timer (must be >=1). Setting to 1 and re-loading.`)
         handleChangeNumRounds(timerIdx, 1);
-        resetTimer(timerIdx)
         if (isTabata) {
           // also force switch back to work time
           setTimer(workTime);
           setIsWorkTime(true);
+        } else {
+          setTimer(startTime);
         }
+        if (timerIdx === 0) { setTimerHasStarted(false); }
       } else if (currRound > numRounds) {
         alert(`Invalid numRounds for Timer @ index (must be <= numRounds). Setting currRound ${currRound} equal to numRounds ${numRounds}.`)
         // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
@@ -334,7 +335,7 @@ const AppProvider = ({ children }) => {
       }
     }
     // valid
-  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer, resetTimer]);
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer, setTimerHasStarted]);
 
   // Auto-Restart routine if end up in a situation where state is invalid (should only happen after certain edits to routine)
   if (
