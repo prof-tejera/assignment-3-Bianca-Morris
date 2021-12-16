@@ -1,15 +1,13 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+
+import { AppContext } from "../context/AppProvider";
+import { H1, themeColors } from "../utils/tokensAndTheme";
+import { displayTimeString } from "../utils/helpers";
+import { nullFx, timerToJSX } from "../utils/constants";
 
 import Panel from "../components/generic/Panel";
-import Stopwatch from "../components/timers/Stopwatch";
-import Countdown from "../components/timers/Countdown";
-import XY from "../components/timers/XY";
-import Tabata from "../components/timers/Tabata";
-import { AppContext } from "../context/AppProvider";
-
-import { H1, themeColors } from "../utils/tokensAndTheme";
-import { Link } from "react-router-dom";
 import Button from "../components/generic/Button";
 
 const Wrapper = styled.div`
@@ -80,11 +78,6 @@ const TimerSubtitle = styled.div`
 
 function App() {
   const {
-    dispatch,
-    numRounds,
-    handleChangeNumRounds,
-    currRound,
-    setCurrRound,
     timerIdx,
     isTimerRunning,
     hasTimerStarted,
@@ -93,32 +86,9 @@ function App() {
     restartRoutine,
     computeRoutineStepTime,
     computeTotalRoutineTime,
-    displayTimeString
+    checkForInvalidRoundTimes,
+    deleteTimerFromRoutine
   } = useContext(AppContext);
-
-  const timers = {
-    "Stopwatch": { C: <Stopwatch /> },
-    "Countdown": { C: <Countdown /> },
-    "XY": { C: <XY /> },
-    "Tabata": { C: <Tabata /> },
-  };
-
-  const checkForInvalidRoundTimes = useCallback(() => {
-    const { type } = routineState[timerIdx] || {};
-    if (type === "Tabata" || type === "XY") {
-      if (numRounds <= 0) {
-        alert(`Invalid numRounds for Timer @${timerIdx} (must be >=1). Setting to 1 and re-loading.`)
-        handleChangeNumRounds(timerIdx, 1);
-        
-      } else if (currRound > numRounds) {
-        alert(`Invalid numRounds for Timer @ index (must be <= numRounds). Setting currRound ${currRound} equal to numRounds ${numRounds}.`)
-        // Invalid numRounds for Timer @ index (must be <= totalRounds). Setting to be equal to currentRound.
-        setCurrRound(numRounds);
-        // console.log(`invalid currRound ${currRound} > numRounds ${numRounds}`);
-      }
-    }
-    // valid
-  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState]);
 
   useEffect(() => {
     checkForInvalidRoundTimes();
@@ -137,12 +107,6 @@ function App() {
   }
 
   if (!currRoutineStep) { throw new Error("Routine defined, but no current step. TimerIdx might be out of bounds.")};
-  
-  const deleteThisIndex = (idx) => {
-    if (!isTimerRunning) {
-      dispatch({ type: "removeTimer", indexToRemove: idx })
-    }
-  };
 
   const { type } = currRoutineStep;
 
@@ -150,18 +114,18 @@ function App() {
     <Wrapper>
       <Timers>
         <RoutinePane >
-          <Link to="/add"><Button variant="secondary" onClick={() => null}>Add to Routine</Button></Link>
+          <Link to="/add"><Button variant="secondary" onClick={nullFx}>Add to Routine</Button></Link>
           { routineState.map((timer, idx) => {
             if (timerIdx === idx) {
               return (
-                <ActiveTimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
+                <ActiveTimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteTimerFromRoutine(idx)} >
                   {timer.type}
                   <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
                 </ActiveTimerTitle>
               );
             }
             return (
-              <TimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteThisIndex(idx)} >
+              <TimerTitle key={timer.uuid} {...{idx, isTimerRunning, hasTimerStarted }} onClick={(e) => deleteTimerFromRoutine(idx)} >
                 {timer.type}
                 <TimerSubtitle>({displayTimeString(computeRoutineStepTime(idx))})</TimerSubtitle>
               </TimerTitle>
@@ -169,7 +133,7 @@ function App() {
           })}
         </RoutinePane>
         <Panel>
-          { timers[type].C }
+          { timerToJSX[type].C }
         </Panel>
       </Timers>
       <BottomPanel>
