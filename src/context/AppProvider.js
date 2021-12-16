@@ -217,7 +217,7 @@ const AppProvider = ({ children }) => {
     timerComplete();
   }
 
-  const resetTimer = (idx) => {
+  const resetTimer = useCallback((idx) => {
     const thisTimer = routineState[idx];
     const { type } = thisTimer;
     if (type !== "Stopwatch") {
@@ -232,7 +232,7 @@ const AppProvider = ({ children }) => {
       setTimer(emptyTimer);
     }
     if (idx === 0) { setTimerHasStarted(false); }
-  }
+  }, [routineState, setTimer, setTimerHasStarted]);
 
   /** Starts the routine over, and clears state from previous runs */
   const restartRoutine = () => {
@@ -334,7 +334,7 @@ const AppProvider = ({ children }) => {
       }
     }
     // valid
-  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer]);
+  }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer, resetTimer]);
 
   // Auto-Restart routine if end up in a situation where state is invalid (should only happen after certain edits to routine)
   if (
