@@ -59,9 +59,10 @@ const TimerTitle = styled.div`
   font-family: SourceCodePro;
 
   :hover {
-    ::before {
-      content: "(DELETE THIS TIMER)"
-    }
+    ${ props => (props.isTimerRunning || props.hasTimerStarted) ? "" :
+      `::before {
+        content: "(DELETE THIS TIMER)"
+      }` }
 
     ${ props => (props.isTimerRunning || props.hasTimerStarted) ? "": `background-color: ${themeColors.btnDangerHover};\n`}
     ${ props => (props.isTimerRunning || props.hasTimerStarted) ? "": `color: ${themeColors.textLight};` }

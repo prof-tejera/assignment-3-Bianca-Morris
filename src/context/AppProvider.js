@@ -123,21 +123,13 @@ const AppProvider = ({ children }) => {
   }
 
   const timerComplete = () => {
-    handleStop();
     playTimerEnd();
 
+    // Not finished with routine
     if (timerIdx !== routineState.length - 1) {
-      const nextTimerIdx = timerIdx + 1;
-      setTimerIdx(nextTimerIdx);
-
-      // reset everything
-      setCurrRound(1);
-      setIsWorkTime(true);
-      resetTimer(nextTimerIdx);
-
-      // then, auto start
-      handleStart();
+      switchToNextTimer();
     } else {
+      handleStop();
       alert('Routine complete!');
     }
   }
@@ -228,7 +220,8 @@ const AppProvider = ({ children }) => {
     setTimerRunning(false);
   }
 
-  const handleStart = (e) => {
+  const handleStart = (e, idx) => {
+    const { startTime, workTime, restTime } = routineState[idx || timerIdx] || {};
     if (!hasStarted){
       setTimerHasStarted(true);
     }
@@ -242,7 +235,9 @@ const AppProvider = ({ children }) => {
           setTimer(restTime);
         }
       }
-    } // If stopwatch, resume from current min, sec, hours
+    } else {
+        setTimer(emptyTimer); // start over from beginning for stopwatch
+    }
     setTimerRunning(true);
   }
 
@@ -298,16 +293,25 @@ const AppProvider = ({ children }) => {
     if (idx === 0) { setTimerHasStarted(false); }
   }
 
+  const switchToNextTimer = () => {
+    const newTimerIdx = timerIdx + 1;
+    setTimerIdx(newTimerIdx);
+
+    if (isTimerRunning && routineState.length > 0) {
+      // Update states and trigger next round 
+      setCurrRound(1);
+      setIsWorkTime(true);
+      console.log("timerIdx", newTimerIdx);
+      resetTimer(newTimerIdx);
+    }      
+  }
+
   // Restart routine if end up in a situation where state is invalid (should only happen after editing routine)
-  // TODO: more handling for previous states interfering with current run (HH:MM:SS leftover values)
   if (
     (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
     // (currRound > numRounds) // invalid round
   ) { 
     // Leftover state from previous run interfering with current run; adjust start index and restart routine
-    // if (numRounds <= 0){
-    //   handleChangeNumRounds(timerIdx, 1);
-    // }
     restartRoutine();
   };
 
