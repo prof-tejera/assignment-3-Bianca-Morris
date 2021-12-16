@@ -232,7 +232,7 @@ const Documentation = () => {
         />
         <DocumentComponent
           title="TimerControls "
-          component={<TimerControls startDisabled={true} stopDisabled={true} resetDisabled={true} />}
+          component={<TimerControls  startDisabled={true} stopDisabled={true} resetDisabled={true} />}
           propDocs={[
             {
               prop: "startDisabled",
@@ -249,6 +249,24 @@ const Documentation = () => {
             {
               prop: "resetDisabled",
               description: "Should reset button be disabled?",
+              type: "boolean",
+              defaultValue: "false"
+            },
+            {
+              prop: "resumeDisabled",
+              description: "Should resume button be disabled?",
+              type: "boolean",
+              defaultValue: "false"
+            },
+            {
+              prop: "hideResume",
+              description: "Should resume button be hidden altogether?",
+              type: "boolean",
+              defaultValue: "false"
+            },
+            {
+              prop: "hideReset",
+              description: "Should reset button be hidden altogether?",
               type: "boolean",
               defaultValue: "false"
             },

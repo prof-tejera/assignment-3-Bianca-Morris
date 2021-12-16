@@ -7,7 +7,8 @@ import { CountdownEditBlock, StopwatchEditBlock, TabataEditBlock, XYEditBlock } 
 import Button from "../generic/Button";
 import { timerTypes } from "../../utils/constants";
 
-
+/* Used in AddView.js and contains features common to all timers; a timer-specific version of each edit block
+is located in ./TimerSpecificEditBlocks */
 export const EditBlock = (props) => {
     const { type, dispatch, index, ...passProps } = props;
 

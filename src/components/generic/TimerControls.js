@@ -1,11 +1,12 @@
 import React, { useContext } from "react";
+import styled from "styled-components";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFastForward, faPlay, faStop, faSync } from '@fortawesome/free-solid-svg-icons';
 
 import { AppContext } from "../../context/AppProvider";
 import Button, { ButtonSpacer } from "../generic/Button";
 import { globalPropTypes } from "../../utils/globalPropTypes";
-import styled from "styled-components";
+import { nullFx } from "../../utils/constants";
 
 
 const ButtonIconHolderRow = styled.div`
@@ -23,11 +24,11 @@ const ButtonIconHolderRow = styled.div`
 const TimerControls = (props) => {
   const {
     isTimerRunning,
-    handleSkipToEnd,
-    handleStop,
-    handleStart,
-    handleReset,
-    handleResume,
+    handleSkipToEnd = nullFx,
+    handleStop = nullFx,
+    handleStart = nullFx,
+    handleReset = nullFx,
+    handleResume = nullFx,
     hasStarted
   } = useContext(AppContext);
 
@@ -92,13 +93,17 @@ TimerControls.propTypes = {
     startDisabled: globalPropTypes.disabled,
     stopDisabled: globalPropTypes.disabled,
     resetDisabled: globalPropTypes.disabled,
-    resumeDisabled: globalPropTypes.disabled
+    resumeDisabled: globalPropTypes.disabled,
+    hideResume: globalPropTypes.disabled,
+    hideReset: globalPropTypes.disabled
 }
 TimerControls.defaultProps = {
     startDisabled: false,
     stopDisabled: false,
     resetDisabled: false,
     resumeDisabled: false,
+    hideResume: false,
+    hideReset: false
 }
 
 export default TimerControls;

@@ -70,6 +70,7 @@ const AppProvider = ({ children }) => {
     }
   }
 
+  /** Handles completion of a timer and a routine */
   const timerComplete = () => {
     playTimerEnd();
 
@@ -82,6 +83,7 @@ const AppProvider = ({ children }) => {
     }
   }
 
+  /** Handles completion of a single round for XY timers */
   const roundComplete = () => {
     if (currRound !== numRounds) {
       playRoundEnd();
@@ -93,6 +95,7 @@ const AppProvider = ({ children }) => {
     }
   }
 
+  /** Actions to take on a tabata round complete; kicks over to timerComplete if at end of routine */
   const tabataRoundComplete = () => {
     if (!isWorkTime && (currRound === numRounds)) {
       timerComplete();
@@ -110,7 +113,7 @@ const AppProvider = ({ children }) => {
     }
   }
 
-  // Event Handlers
+  /** Event handlers for various TimeInputs */
   const handleSetStartTime = (e, idxToChange, startTime) => {
     handleSetTimeInput(e, idxToChange, startTime, "startTime");
   }
@@ -152,6 +155,7 @@ const AppProvider = ({ children }) => {
     dispatch(action);
   }
 
+  /** Event handlers for changing rounds */
   const handleChangeNumRounds = useCallback((indexToChange, num) => {
     const numInt = parseInt(num || 0);
     if (!isNaN(numInt)) {
@@ -164,6 +168,7 @@ const AppProvider = ({ children }) => {
     }
   }, [dispatch]);
 
+  /** Other event handlers for interfacing with timer via buttons */
   const handleStop = (e) => {
     setTimerRunning(false);
   }
@@ -198,6 +203,7 @@ const AppProvider = ({ children }) => {
     // }
   }
 
+  /** Allows resetting of the current timer; used primarily as event handler */
   const handleReset = (e) => {
     handleStop();
     resetTimer(timerIdx);
@@ -205,6 +211,7 @@ const AppProvider = ({ children }) => {
     setIsWorkTime(true);
   }
 
+  /** Allows fast-forwarding through a timer's runtime; used primarily as event handler */
   const handleSkipToEnd = (e) => {
     if (!isIncrementing) { // XY, Tabata, Countdown
       setTimer([0, 0, 0]);
@@ -216,6 +223,7 @@ const AppProvider = ({ children }) => {
     timerComplete();
   }
 
+  /** Sets a timer back to it's starting values, and if it's the first one in routine, resets the hasStarted state */
   const resetTimer = useCallback((idx) => {
     const thisTimer = routineState[idx];
     const { type } = thisTimer;
@@ -243,6 +251,7 @@ const AppProvider = ({ children }) => {
     setTimerHasStarted(false);
   }
 
+  /** Facilitates edits to timerIDX and cleans up state from previous timers */
   const switchToNextTimer = () => {
     const newTimerIdx = timerIdx + 1;
     setTimerIdx(newTimerIdx);
@@ -255,6 +264,7 @@ const AppProvider = ({ children }) => {
     }      
   }
 
+  /** Deletes timer at passed in index from routine */
   const deleteTimerFromRoutine = (idx) => {
     if (!isTimerRunning) {
       dispatch({ type: "removeTimer", indexToRemove: idx })
@@ -299,6 +309,10 @@ const AppProvider = ({ children }) => {
     return stepTime;
   }
 
+  /**
+   * Uses routineState to generate a total time for running the routine
+   * @returns {Array} representing a single timer (total time)
+   */
   const computeTotalRoutineTime = () => {
     let totalTime;
     for (let i = 0; i < routineState.length; i++) {
@@ -312,6 +326,9 @@ const AppProvider = ({ children }) => {
     return totalTime;
   }
 
+  /**
+   * Handles some state problems with invalid rounds that can occur when switching between editing and running timers
+   */
   const checkForInvalidRoundTimes = useCallback(() => {
     const { type, workTime, startTime } = routineState[timerIdx] || {};
     const isTabata = type === "Tabata";
@@ -337,7 +354,9 @@ const AppProvider = ({ children }) => {
     // valid
   }, [handleChangeNumRounds, setCurrRound, currRound, numRounds, timerIdx, routineState, setIsWorkTime, setTimer, setTimerHasStarted]);
 
-  // Auto-Restart routine if end up in a situation where state is invalid (should only happen after certain edits to routine)
+  /**
+   * Forces auto-Restart routine if end up in a situation where routine state is invalid (should only happen after certain edits to routine)
+   */
   if (
     (!currRoutineStep && routineState.length > 0)  // invalid timerIdx
   ) { 
@@ -345,7 +364,7 @@ const AppProvider = ({ children }) => {
     restartRoutine();
   };
 
-  return (
+  return ( // TODO: This array could probably use some pruning...
     <AppContext.Provider
       value={{
         currRound,

@@ -5,7 +5,8 @@ import Input from "../generic/Input";
 import { RoundsLabel } from "../generic/DisplayRounds";
 import { AppContext } from "../../context/AppProvider";
 
-
+/* Used in AddView.js and contains a timer-specific version of each edit block; the parent common to all edit blocks
+is located in ./EditBlock.js */
 export const StopwatchEditBlock = (props) => {
     const { handleSetEndTime } = useContext(AppContext);
     const { endTime, index } = props;
